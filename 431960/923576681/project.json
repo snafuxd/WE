@@ -1,0 +1,534 @@
+{
+	"description" : "",
+	"file" : "index.html",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"audiosetting" : 
+			{
+				"order" : 1,
+				"text" : "<h4>Audio Settings</h4>",
+				"type" : "text"
+			},
+			"backgrounad" : 
+			{
+				"order" : 85,
+				"text" : "<h4>Theme</h4>",
+				"type" : "text"
+			},
+			"background" : 
+			{
+				"order" : 40,
+				"text" : "<h4>Background</h4>",
+				"type" : "text"
+			},
+			"backgroundcolor" : 
+			{
+				"order" : 50,
+				"text" : "Color Overlay on Back Image",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"backgroundcoloropacity" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 60,
+				"text" : "Color Opacity%",
+				"type" : "slider",
+				"value" : 100
+			},
+			"backgroundimageb" : 
+			{
+				"condition" : "!backgroundvideo.value",
+				"order" : 70,
+				"text" : "Back Image",
+				"type" : "file",
+				"value" : ""
+			},
+			"backgroundimagef" : 
+			{
+				"order" : 80,
+				"text" : "Front Image",
+				"type" : "file",
+				"value" : ""
+			},
+			"backgroundvideo" : 
+			{
+				"order" : 69,
+				"text" : "Back Video(webM only)",
+				"type" : "bool",
+				"value" : false
+			},
+			"backgroundvideonumber" : 
+			{
+				"condition" : "backgroundvideo.value",
+				"options" : 
+				[
+					{
+						"label" : "UserDefined1",
+						"value" : 1
+					},
+					{
+						"label" : "UserDefined2",
+						"value" : 2
+					},
+					{
+						"label" : "UserDefined3",
+						"value" : 3
+					},
+					{
+						"label" : "UserDefined4",
+						"value" : 4
+					},
+					{
+						"label" : "UseDefined5",
+						"value" : 5
+					}
+				],
+				"order" : 72,
+				"text" : "Video Source",
+				"type" : "combo",
+				"value" : 1
+			},
+			"bars" : 
+			{
+				"condition" : "canvasoptions.value == 2",
+				"order" : 90,
+				"text" : "<h4>Bars</h4>",
+				"type" : "text"
+			},
+			"barwidth" : 
+			{
+				"condition" : "canvasoptions.value == 2",
+				"max" : 100,
+				"min" : 1,
+				"order" : 120,
+				"text" : "Width",
+				"type" : "slider",
+				"value" : 5
+			},
+			"bluroption" : 
+			{
+				"condition" : "backgroundimageb.value && !backgroundvideo.value",
+				"max" : 10,
+				"min" : 0,
+				"order" : 75,
+				"text" : "Blur",
+				"type" : "slider",
+				"value" : 0
+			},
+			"bottombounceopacity" : 
+			{
+				"condition" : "canvasoptions.value == 2 && bouncebars.value == true",
+				"max" : 100,
+				"min" : 0,
+				"order" : 340,
+				"text" : "Reflect Bounce Opacity%",
+				"type" : "slider",
+				"value" : 100
+			},
+			"bottomlinecolor" : 
+			{
+				"condition" : "reflection.value == true",
+				"order" : 310,
+				"text" : "Reflection Colors",
+				"type" : "color",
+				"value" : "1 1 1"
+			},
+			"bottomlineopacity" : 
+			{
+				"condition" : "reflection.value == true",
+				"max" : 100,
+				"min" : 0,
+				"order" : 330,
+				"text" : "Reflection Opacity%",
+				"type" : "slider",
+				"value" : 40
+			},
+			"bouncebars" : 
+			{
+				"condition" : "canvasoptions.value == 2",
+				"order" : 160,
+				"text" : "Bouncing Bars",
+				"type" : "bool",
+				"value" : true
+			},
+			"bouncespeed" : 
+			{
+				"condition" : "canvasoptions.value == 2 && bouncebars.value == true",
+				"max" : 500,
+				"min" : 10,
+				"order" : 180,
+				"text" : "Bouncing Bars Speed %",
+				"type" : "slider",
+				"value" : 100
+			},
+			"canvasoptions" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "Lines",
+						"value" : 1
+					},
+					{
+						"label" : "Bars",
+						"value" : 2
+					},
+					{
+						"label" : "Waves",
+						"value" : 3
+					}
+				],
+				"order" : 87,
+				"text" : "Type",
+				"type" : "combo",
+				"value" : 1
+			},
+			"greyscaleoption" : 
+			{
+				"condition" : "backgroundimageb.value && !backgroundvideo.value",
+				"max" : 100,
+				"min" : 0,
+				"order" : 73,
+				"text" : "Grey Scale%",
+				"type" : "slider",
+				"value" : 0
+			},
+			"htmlcolor" : 
+			{
+				"condition" : "imageoptions.value != 2",
+				"order" : 84,
+				"text" : "Background Color",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"huerotate" : 
+			{
+				"condition" : "backgroundimageb.value && !backgroundvideo.value",
+				"max" : 360,
+				"min" : 0,
+				"order" : 74,
+				"text" : "Hue-Rotate",
+				"type" : "slider",
+				"value" : 0
+			},
+			"imageoptions" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "Initial",
+						"value" : 1
+					},
+					{
+						"label" : "Cover",
+						"value" : 2
+					},
+					{
+						"label" : "Contain",
+						"value" : 3
+					}
+				],
+				"order" : 83,
+				"text" : "Image options",
+				"type" : "combo",
+				"value" : 2
+			},
+			"indibargap" : 
+			{
+				"condition" : "canvasoptions.value == 2",
+				"max" : 50,
+				"min" : 1,
+				"order" : 130,
+				"text" : "Individual Gap",
+				"type" : "slider",
+				"value" : 5
+			},
+			"indibarheight" : 
+			{
+				"condition" : "canvasoptions.value == 2",
+				"max" : 50,
+				"min" : 1,
+				"order" : 140,
+				"text" : "Individual Height",
+				"type" : "slider",
+				"value" : 5
+			},
+			"invertoption" : 
+			{
+				"condition" : "backgroundimageb.value && !backgroundvideo.value",
+				"max" : 100,
+				"min" : 0,
+				"order" : 76,
+				"text" : "Invert Colors%",
+				"type" : "slider",
+				"value" : 0
+			},
+			"leftaudio" : 
+			{
+				"condition" : "canvasoptions.value != 3",
+				"order" : 23,
+				"text" : "Only left channel",
+				"type" : "bool",
+				"value" : false
+			},
+			"lines" : 
+			{
+				"condition" : "canvasoptions.value == 1",
+				"order" : 90,
+				"text" : "<h4>Lines</h4>",
+				"type" : "text"
+			},
+			"linewidth" : 
+			{
+				"condition" : "canvasoptions.value == 1",
+				"max" : 100,
+				"min" : 1,
+				"order" : 110,
+				"text" : "Width",
+				"type" : "slider",
+				"value" : 5
+			},
+			"main" : 
+			{
+				"order" : 190,
+				"text" : "<h4>Main/Top</h4>",
+				"type" : "text"
+			},
+			"maxheightbot" : 
+			{
+				"condition" : "reflection.value == true",
+				"max" : 3000,
+				"min" : 0,
+				"order" : 350,
+				"text" : "Reflection Max-Height",
+				"type" : "slider",
+				"value" : 300
+			},
+			"maxheighttop" : 
+			{
+				"max" : 3000,
+				"min" : 0,
+				"order" : 260,
+				"text" : "Main Max-Height",
+				"type" : "slider",
+				"value" : 300
+			},
+			"normalize" : 
+			{
+				"order" : 10,
+				"text" : "Smooth Audio",
+				"type" : "bool",
+				"value" : true
+			},
+			"normalizeresponce" : 
+			{
+				"max" : 100,
+				"min" : 1,
+				"order" : 20,
+				"text" : "Audio Responsiveness",
+				"type" : "slider",
+				"value" : 25
+			},
+			"pinknoise" : 
+			{
+				"order" : 24,
+				"text" : "Normalise Noise",
+				"type" : "bool",
+				"value" : true
+			},
+			"reflection" : 
+			{
+				"order" : 270,
+				"text" : "Reflection",
+				"type" : "bool",
+				"value" : true
+			},
+			"reflection1" : 
+			{
+				"condition" : "reflection.value == true",
+				"order" : 280,
+				"text" : "<h4>Reflection/Bottom</h4>",
+				"type" : "text"
+			},
+			"reverseleft" : 
+			{
+				"order" : 21,
+				"text" : "Reverse Left Audio",
+				"type" : "bool",
+				"value" : false
+			},
+			"reverseright" : 
+			{
+				"order" : 22,
+				"text" : "Reverse Right Audio",
+				"type" : "bool",
+				"value" : false
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"selectaudio" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "1024",
+						"value" : 1
+					},
+					{
+						"label" : "512",
+						"value" : 2
+					},
+					{
+						"label" : "256",
+						"value" : 3
+					},
+					{
+						"label" : "128",
+						"value" : 4
+					},
+					{
+						"label" : "64",
+						"value" : 5
+					},
+					{
+						"label" : "32",
+						"value" : 6
+					}
+				],
+				"order" : 86,
+				"text" : "Audio Size",
+				"type" : "combo",
+				"value" : 4
+			},
+			"text1" : 
+			{
+				"condition" : "backgroundvideo.value",
+				"order" : 71,
+				"text" : "<p>Reduce Opacity of the Color(above) to see Back Video</p>",
+				"type" : "text"
+			},
+			"text2" : 
+			{
+				"condition" : "!backgroundvideo.value",
+				"order" : 71,
+				"text" : "<p>Reduce Opacity of the Color(above) to see Back image</p>",
+				"type" : "text"
+			},
+			"topbouncecolor" : 
+			{
+				"condition" : "canvasoptions.value == 2 && bouncebars.value == true",
+				"order" : 185,
+				"text" : "Bounce Color",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"topbounceheight" : 
+			{
+				"condition" : "canvasoptions.value == 2 && bouncebars.value == true",
+				"max" : 50,
+				"min" : 1,
+				"order" : 170,
+				"text" : "Bouncing Bars Height",
+				"type" : "slider",
+				"value" : 1
+			},
+			"topbounceopacity" : 
+			{
+				"condition" : "canvasoptions.value == 2 && bouncebars.value == true",
+				"max" : 100,
+				"min" : 0,
+				"order" : 250,
+				"text" : "Main Bounce Opacity%",
+				"type" : "slider",
+				"value" : 100
+			},
+			"toplinecolor" : 
+			{
+				"order" : 220,
+				"text" : "Main Colors",
+				"type" : "color",
+				"value" : "1 1 1"
+			},
+			"toplineopacity" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 240,
+				"text" : "Main Opacity%",
+				"type" : "slider",
+				"value" : 100
+			},
+			"usergap" : 
+			{
+				"max" : 1000,
+				"min" : -1000,
+				"order" : 150,
+				"text" : "Reduce gap between lines by",
+				"type" : "slider",
+				"value" : 0
+			},
+			"usermainhorzpostion" : 
+			{
+				"max" : 1500,
+				"min" : -1500,
+				"order" : 210,
+				"text" : "Main horizontal position",
+				"type" : "slider",
+				"value" : 0
+			},
+			"usermainvertpostion" : 
+			{
+				"max" : 1500,
+				"min" : -1500,
+				"order" : 200,
+				"text" : "Main vertical position",
+				"type" : "slider",
+				"value" : 0
+			},
+			"userreflecthorzpostion" : 
+			{
+				"condition" : "reflection.value == true",
+				"max" : 1500,
+				"min" : -1500,
+				"order" : 300,
+				"text" : "Reflection horizontal position",
+				"type" : "slider",
+				"value" : 0
+			},
+			"userreflectvertpostion" : 
+			{
+				"condition" : "reflection.value == true",
+				"max" : 1500,
+				"min" : -1500,
+				"order" : 290,
+				"text" : "Reflection vertical position",
+				"type" : "slider",
+				"value" : 0
+			},
+			"waves" : 
+			{
+				"condition" : "canvasoptions.value == 3",
+				"order" : 90,
+				"text" : "<h4>Waves</h4>",
+				"type" : "text"
+			}
+		},
+		"supportsaudioprocessing" : true
+	},
+	"monetization" : false,
+	"preview" : "preview.gif",
+	"tags" : [ "Music" ],
+	"title" : "Simplistic Audio Visualizer",
+	"type" : "web",
+	"visibility" : "public",
+	"workshopid" : 923576681
+}

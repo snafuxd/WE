@@ -1,0 +1,146 @@
+{
+	"description" : "",
+	"file" : "index.html",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"blurColor" : 
+			{
+				"order" : 6,
+				"text" : "<br />blur kleur<br />Blur color<br />",
+				"type" : "color",
+				"value" : "0.5 0.5 1"
+			},
+			"cX" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 7,
+				"text" : "<br />cirkel positie-X(%)<br />Center of circle-X(%)<br />",
+				"type" : "slider",
+				"value" : 50
+			},
+			"cY" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 8,
+				"text" : "<br />cirkel positie-Y(%)<br />Center of circle-Y(%)<br />",
+				"type" : "slider",
+				"value" : 50
+			},
+			"color" : 
+			{
+				"order" : 5,
+				"text" : "<br />kleur<br />Color<br />",
+				"type" : "color",
+				"value" : "1 0.8 1"
+			},
+			"image" : 
+			{
+				"order" : 1,
+				"text" : "<br />Je achtergrond JPG<br />Background img<br />",
+				"type" : "file"
+			},
+			"isRotate" : 
+			{
+				"order" : 14,
+				"text" : "<br />roteren van cirkel<br />Is rotate?<br />",
+				"type" : "bool",
+				"value" : false
+			},
+			"radius" : 
+			{
+				"max" : 80,
+				"min" : 40,
+				"order" : 3,
+				"text" : "<br />grootte cirkel(%)<br />radius(%)<br />",
+				"type" : "slider",
+				"value" : 50
+			},
+			"range" : 
+			{
+				"max" : 15,
+				"min" : 1,
+				"order" : 4,
+				"text" : "<br />bereik audio effect<br />range<br />",
+				"type" : "slider",
+				"value" : 7
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"showTime" : 
+			{
+				"order" : 9,
+				"text" : "<br />Wil je die klok zien?<br />Show time?<br />",
+				"type" : "bool",
+				"value" : true
+			},
+			"style" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "1",
+						"value" : 1
+					},
+					{
+						"label" : "2",
+						"value" : 2
+					}
+				],
+				"order" : 2,
+				"text" : "<br />stijl van cirkel<br />Style<br />",
+				"type" : "combo",
+				"value" : 2
+			},
+			"tSize" : 
+			{
+				"max" : 50,
+				"min" : 10,
+				"order" : 11,
+				"text" : "<br />grootte van die klok<br />Time size<br />",
+				"type" : "slider",
+				"value" : 20
+			},
+			"tStyle" : 
+			{
+				"order" : 10,
+				"text" : "<br />24uur klok<br />24-hour?<br />",
+				"type" : "bool",
+				"value" : true
+			},
+			"tX" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 12,
+				"text" : "<br />tijd-X(%)<br />Time-X(%)<br />",
+				"type" : "slider",
+				"value" : 50
+			},
+			"tY" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 13,
+				"text" : "<br />tijd-Y(%)<br />Time-Y(%)<br />",
+				"type" : "slider",
+				"value" : 50
+			}
+		},
+		"supportsaudioprocessing" : true
+	},
+	"preview" : "preview.jpg",
+	"tags" : [ "Relaxing" ],
+	"title" : "4K Haven With Audio Vizualiser",
+	"type" : "web",
+	"visibility" : "public",
+	"workshopid" : 862159088
+}

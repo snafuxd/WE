@@ -1,0 +1,83 @@
+html {
+	height: 100%;
+}
+body {
+	background-size: cover;
+	margin: 0;
+	height: 100%;
+	width: 100%;
+}
+
+			:root
+			{
+				background: #000;
+			}
+			
+			#wrapper
+			{
+				width: 100%;
+				
+				position: relative;
+			}
+			
+			#temp
+			{
+				width:300px;
+				
+				position: relative;
+				
+				margin: 0 auto;
+			}
+			
+			.snow
+			{
+				position: absolute;
+			}
+			
+			.snowTween
+			{
+				visibility: hidden;				
+			}
+			
+			.snowInner
+			{
+				
+			}
+			
+			.snowFlake
+			{
+				width: 3px;
+				height: 3px;
+			
+				background: url(http://www.simonkinslow.com/_2013/snow/__assets/_img/flake.png) no-repeat left top;
+				
+				-webkit-backface-visibility: hidden;
+				backface-visibility: hidden; 
+			}
+			
+			
+			@-webkit-keyframes snowFall
+			{
+				from	 {-webkit-transform: translateY(-300px);}
+				to		 {-webkit-transform: translateY(2560px);}
+			}
+			
+			@-webkit-keyframes snowFallTurn
+			{
+				from	{-webkit-transform: rotate(0deg);}
+				to		{-webkit-transform: rotate(260deg);}
+			}
+			
+			@keyframes snowFall
+			{
+				from	 {transform: translateY(-300px);}
+				to		 {transform: translateY(2560px);}
+			}
+			
+			@keyframes snowFallTurn
+			{
+				from	{transform: rotate(0deg);}
+				to		{transform: rotate(260deg);}
+			}
+			
+			

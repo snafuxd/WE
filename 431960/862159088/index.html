@@ -1,0 +1,545 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<title>canvas音频特效</title>
+	<style>
+		html,body {
+			width:100%;
+			height:100%;
+			margin:0;
+			padding:0;
+			overflow:hidden;
+		}
+		body {
+			background-color:#000;
+			background-size:100% 100%;
+		}
+		#show {
+			display:none;
+		}
+		#clock {
+			position:absolute;
+			top:0;
+			left:0;
+			text-align:center;
+			color:#fff;
+			font-family:"等线 Light","Microsoft Yahei Light";
+			font-size:200px;
+			text-shadow: 0 0 20px yellow;
+			z-index:10;
+		}
+		#clock .sec {
+			font-size:0.5em;
+		}
+		#time {
+			position:relative;
+		}
+		#clock .st {
+			position:absolute;
+			right:2%;
+			top:15%;
+			font-size:0.25em;
+			line-height:1;
+		}
+		#can {
+			margin:0;
+			padding:0;
+			position:absolute;
+			left:0;
+			top:0;
+			z-index:20;
+		}
+	</style>
+</head>
+<body>
+	<div id="show">测试</div>
+	<div id="clock">00:00</div>
+	<canvas id="can">您的浏览器不支持canvas标签</canvas>
+	<script>
+		window.requestAnimFrame = (function(){
+			return  window.requestAnimationFrame       ||
+					window.webkitRequestAnimationFrame ||
+					window.mozRequestAnimationFrame    ||
+					function( callback ){
+						window.setTimeout(callback, 1000 / 60);
+					};
+		})();
+		var w, h, minW;
+		var show = document.querySelector("#show");
+		function showi(str){
+			show.innerHTML = str;
+		}
+		var oClock = document.querySelector("#clock");
+		var tStyle = true;
+		/* Krijg je tijd */
+		function getTime(){
+			var t = new Date();
+			if(tStyle){
+				oClock.innerHTML = add0(t.getHours())+" : "+add0(t.getMinutes())+" <span class='sec'>"+add0(t.getSeconds())+"</span>";
+			}else{
+				var h = t.getHours();
+				var str = h<12 ? "AM" : "PM";
+				h = h<=12 ? h : h-12;
+				oClock.innerHTML = "<span id='time'>"+add0(h)+" : "+add0(t.getMinutes())+" <span class='sec'>"+add0(t.getSeconds())+"</span><span class='st'>"+str+"</span></span>";
+			}
+		};
+		function autoTime(){
+			getTime();
+			setTimeout(autoTime, 1000);
+		}
+		function add0(n){
+			return n<10 ? '0'+n : ''+n;
+		}
+		autoTime();
+		var can = document.querySelector("#can");
+		function resize(){
+			can.width = w = window.innerWidth;
+			can.height = h = window.innerHeight;
+			minW = Math.min(w, h);
+			oClock.style.width = w+'px';
+			oClock.style.height = oClock.style.lineHeight = h+'px';
+		};
+		resize();
+		oClock.style.fontSize = Math.floor(h/300*20) + 'px';
+		window.onresize = resize;
+		// hoofdopties voor project bestand
+		var param = {
+			style : 1, // 
+			r : 0.5, // 
+			color : "rgba(255,0,0,0.8)", // 
+			blurColor : "red", // 
+			arr1 : [], // 
+			arr2 : [], // 
+			isRotate : true, // 
+			offsetAngle : 0, //
+			arr : [],  // 
+			waveArr : new Array(120),
+			cX : 0.5, // 
+			cY : 0.5,
+			tX : 50, // 
+			tY : 50,
+			range : 1 // 
+		};
+		var ctx = can.getContext("2d");
+		ctx.strokeStyle = param.color;
+		ctx.lineWidth = 3;
+		ctx.shadowBlur = 15;
+		ctx.shadowColor = param.blurColor;
+		/* optiees voor de project bestand */
+		window.wallpaperPropertyListener={
+            applyUserProperties: function(properties){
+				// BELANGRIJK
+				if(properties.image){
+					if(properties.image.value){
+						document.body.style.backgroundImage = "url('file:///"+ properties.image.value +"')";
+					}else{
+						document.body.style.backgroundImage = "url('1.jpg')";
+					}
+					document.body.style.backgroundSize = '100% 100%';
+				};
+				// stijl propertie
+				if(properties.style){
+					param.style = properties.style.value;
+				};
+				// groote cirkel audio
+				if(properties.radius){
+					param.r = properties.radius.value/100;
+				};
+				// hoe lang de lijnen zijn
+				if(properties.range){
+					param.range = properties.range.value/5;
+				};
+				// binnenste kleur
+				if(properties.color){
+					var c = properties.color.value.split(' ').map(function(c){return Math.ceil(c*255)});
+					ctx.strokeStyle = param.color = 'rgba('+ c +',0.8)';
+					oClock.style.color = 'rgb('+c+')';
+				};
+				// buitenkleur
+				if(properties.blurColor){
+					var c = properties.blurColor.value.split(' ').map(function(c){return Math.ceil(c*255)});
+					ctx.shadowColor = param.blurColor = 'rgb('+ c +')';
+					oClock.style.textShadow = '0 0 20px rgb('+c+')';
+				};
+				// propertie om tijd uit en aan te doen
+				if(properties.showTime){
+					oClock.style.display = properties.showTime.value ? 'block' : 'none';
+				};
+				// verplaatsen audio
+				if(properties.cX){
+					param.cX = properties.cX.value*0.01;
+				};
+				if(properties.cY){
+					param.cY = properties.cY.value*0.01;
+				};
+				// verplaatsen klok
+				if(properties.tX){
+					param.tX = properties.tX.value;
+					oClock.style.left = param.tX-50+'%';
+				};
+				if(properties.tY){
+					param.tY = properties.tY.value;
+					oClock.style.top = param.tY-50+'%';
+				};
+				// groote klok middelste
+				if(properties.tSize){
+					var s = properties.tSize.value;
+					oClock.style.fontSize = Math.floor(h/300*s) + 'px';
+				};
+				// stijl
+				if(properties.tStyle){
+					tStyle = properties.tStyle.value;
+					getTime();
+				};
+				// roteren
+				if(properties.isRotate){
+					param.isRotate = properties.isRotate.value;
+				};
+			}
+		}
+		/* 生成点 */
+		function createPoint(arr){
+			param.arr1 = [];
+			param.arr2 = [];
+			for(var i=0; i<120; i++){
+				var deg = Math.PI/180*(i+param.offsetAngle)*3; //
+				var w1 = arr[i] ? arr[i] : 0;
+				var w2;
+				if(param.waveArr[i]){
+					w2 = param.waveArr[i] - 0.1;
+				}else{
+					w2 = 0;
+				};
+				w1 = Math.max(w1, w2);
+				param.waveArr[i] = w1 = Math.min(w1, 1.2);
+				var w = w1*param.range*100;
+				var offset1 = param.r*minW/2+w+1; // 
+				var offset2 = param.r*minW/2-w-1; // 
+				var p1 = getXY(offset1, deg);
+				var p2 = getXY(offset2, deg);
+				param.arr1.push({'x':p1.x, 'y':p1.y});
+				param.arr2.push({'x':p2.x, 'y':p2.y});
+			};
+			if(param.isRotate){
+				param.offsetAngle += 1/5;
+				if(param.offsetAngle>=360) param.offsetAngle = 0;
+			};
+		};
+		function getXY(offset, deg){
+			return {'x':Math.cos(deg)*offset+param.cX*w, 'y':Math.sin(deg)*offset+param.cY*h};
+		};
+		createPoint([]);
+		/* parameters */
+		function style1(){
+			// stijl 1 audio gebeuren
+			ctx.beginPath();
+			ctx.moveTo(param.arr1[0].x, param.arr1[0].y);
+			for(var i=0; i<120; i++){
+				ctx.lineTo(param.arr1[i].x, param.arr1[i].y);
+			};
+			ctx.closePath();
+			ctx.stroke();
+			// stijl 1 audio gebeuren
+			ctx.beginPath();
+			ctx.moveTo(param.arr2[0].x, param.arr2[0].y);
+			for(var i=0; i<120; i++){
+				ctx.lineTo(param.arr2[i].x, param.arr2[i].y);
+			};
+			ctx.closePath();
+			ctx.stroke();
+			// stijl 1 audio gebeuren
+			ctx.beginPath();
+			for(var i=0; i<120; i++){
+				ctx.moveTo(param.arr1[i].x, param.arr1[i].y);
+				ctx.lineTo(param.arr2[i].x, param.arr2[i].y);
+			};
+			ctx.closePath();
+			ctx.stroke();
+		};
+		function style2(){
+			// stijl 2 audio gebeuren
+			ctx.beginPath();
+			for(var i=0; i<120; i++){
+				ctx.moveTo(param.arr1[i].x, param.arr1[i].y);
+				ctx.lineTo(param.arr2[i].x, param.arr2[i].y);
+			};
+			ctx.closePath();
+			ctx.stroke();
+		};
+		style1();
+		window.wallpaperRegisterAudioListener && window.wallpaperRegisterAudioListener(wallpaperAudioListener);
+		function wallpaperAudioListener(arr){
+			ctx.clearRect(0,0,w,h);
+			createPoint(arr);
+			switch (param.style) {
+				case 1:
+				style1();
+				break;
+				case 2:
+				style2();
+				break;
+			}
+		}
+		/*function auto(){
+			ctx.clearRect(0,0,w,h);
+			createPoint(param.arr);
+			style1();
+			requestAnimFrame(auto);
+		}
+		auto();*/
+	</script>
+</body>
+<head>
+	<link rel="stylesheet" type="text/css" href="css/main.css"></link>
+</head>
+
+<body>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+	<script src="jquery.ripples-0.5.3/jquery.ripples.js"></script>
+        <script>
+	window.wallpaperPropertyListener={
+            applyUserProperties: function(properties){
+				};
+			
+				if(properties.dropRadius){
+					$('body').ripples('set', 'dropRadius', properties.dropRadius.value*10);
+				};
+				if(properties.perturbance){
+					$('body').ripples('set', 'perturbance', properties.perturbance.value/100);
+				};
+			}
+		}
+	</script>
+</body>
+<body>
+		<div id="wrapper">
+		
+			<div id="temp">
+		
+			</div>	
+		
+		</div>
+		<script>
+		
+			
+			var snowARR = new Array();
+			
+			
+			var Snow = function(id)
+			{
+				this.com = "snow" + id;
+				this.html = '<div id="' + this.com + '" class="snow"><div class="snowInner snowTween"><div class="snowFlake"></div></div></div>';
+			};		
+			
+			Snow.prototype.setVals = function()
+			{
+				
+				this.sx = Math.floor(Math.random() * (310 - 10) + 10);
+				this.fx = Math.round(Math.random() * (50 + -50) + -50);
+				this.fy = Math.round(Math.random() * (-10 + -50) + -50);
+				this.fr = Math.floor(Math.random() * 360);
+				this.fr_x = Math.round(Math.random() * (100 - -100) + -100);
+				this.fr_y = Math.round(Math.random() * (100 - -100) + -100);
+				this.fall = Math.round(Math.random() * (20 - 4) + 4) + Math.floor(Math.random() * 100) / 100;
+			};
+			
+			Snow.prototype.build = function()
+			{
+				this.css = 	{
+								"visibility"		: "visible",
+								"-webkit-animation"	: "snowFall " + this.fall + "s linear",
+								"animation"	: "snowFall " + this.fall + "s linear"
+							};
+							
+				this.x_placement = 	{
+										"-webkit-transform"	: "translateX(" + this.sx + "px)",
+										"transform"	: "translateX(" + this.sx + "px)"
+									};
+									
+				this.flake_css = 	{
+										"-webkit-transform" : "translate(" + this.fx + "px, " + this.fy + "px) rotate(" + this.fr + "deg)",
+										"transform" : "translate(" + this.fx + "px, " + this.fy + "px) rotate(" + this.fr + "deg)"
+									};
+									
+				this.sprite_css = 	{
+										"-webkit-transform-origin" : this.fr_x + "px " + this.fr_y + "px", 
+										"-webkit-animation"	: "snowFallTurn " + (this.fall * 0.5) + "s ease-in-out infinite",
+										"transform-origin" : this.fr_x + "px " + this.fr_y + "px", 
+										"animation"	: "snowFallTurn " + (this.fall * 0.5) + "s ease-in-out infinite"
+									};
+			};
+			
+			Snow.prototype.reRun = function()
+			{
+				this.d = setTimeout(testOneMove, 50, this);
+			};
+			
+			
+			function setup()
+			{
+				testOne(false);
+			}
+			
+			function testOne(useOne)
+			{
+				if(useOne)
+				{
+					var f = new Snow(0);
+					
+					f.setVals();
+					f.build();
+					
+					snowARR.push(f);
+					
+					$("#temp").prepend(f.html);
+					
+					testOneMove(f);
+				}
+				
+				else
+				{
+					for(var i = 0; i < 60; i++)
+					{
+						var s = new Snow(i);
+						
+						s.setVals();
+						s.build();
+						
+						snowARR.push(s);
+						
+						$("#temp").prepend(s.html);
+						
+						testOneMove(s);					
+					}
+				}
+			}
+			
+			function testOneMove(ob)
+			{
+				$("#" + ob.com).css(ob.x_placement);
+				
+				$("#" + ob.com + " .snowTween").css(ob.css);
+				
+				$("#" + ob.com + " .snowInner").css(ob.flake_css);
+				
+				$("#" + ob.com + " .snowFlake").css(ob.sprite_css);
+				
+				$("#" + ob.com + " .snowTween").get(0).addEventListener("webkitAnimationEnd", testOneEnd, false);
+				$("#" + ob.com + " .snowTween").get(0).addEventListener("animationend", testOneEnd, false);
+			}
+			
+			function testOneEnd(event)
+			{
+				var TARG = event.target.parentElement.id;
+				
+				$("#" + TARG + " .snowTween").get(0).removeEventListener("webkitAnimationEnd", testOneEnd, false);
+				$("#" + TARG + " .snowTween").get(0).removeEventListener("animationend", testOneEnd, false);
+				
+				$("#" + TARG + " .snowTween").removeAttr('style');
+				
+				for(var i in snowARR)
+				{
+					if(snowARR[i].com === TARG)
+					{
+						snowARR[i].setVals();
+						snowARR[i].build();
+						snowARR[i].reRun();
+					}
+				}
+			}
+//setup();
+
+$(document).ready(function(){ setup(); });
+</script>
+</body>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+window.onload = function(){
+	//canvas init
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+	
+	//canvas demensie
+	var W = window.innerWidth;
+	var H = window.innerHeight;
+	canvas.width = W;
+	canvas.height = H;
+	
+	//sneeuwflokken particles
+	var mp = 25; //max particles
+	var particles = [];
+	for(var i = 0; i < mp; i++)
+	{
+		particles.push({
+			x: Math.random()*W, //x-koordinaat
+			y: Math.random()*H, //y-koordinaat
+			r: Math.random()*0.6+1, //groote van sneeuwflok
+			d: Math.random()*mp //dichtheid
+		})
+	}
+	
+	//Dit spawns de sneeuwflokken
+	function draw()
+	{
+		ctx.clearRect(0, 0, W, H);
+		
+		ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+		ctx.beginPath();
+		for(var i = 0; i < mp; i++)
+		{
+			var p = particles[i];
+			ctx.moveTo(p.x, p.y);
+			ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true);
+		}
+		ctx.fill();
+		update();
+	}
+	
+	//functie om ze laten te bewegen
+	//de hoek van de sneeuw
+	var angle = 0;
+	function update()
+	{
+		angle += 0.01;
+		for(var i = 0; i < mp; i++)
+		{
+			var p = particles[i];
+			//Updating X and Y koordinaten
+			//Hou die 1 anders gaan ze omhoog
+			p.y += Math.cos(angle+p.d) + 1 + p.r/2;
+			p.x += Math.sin(angle) * 2;
+			
+			//Sneeuw naar boven van scherm sturen
+			//Dit maakt het meer natuurlijk omdat van beide kanten komt
+			if(p.x > W+5 || p.x < -5 || p.y > H)
+			{
+				if(i%3 > 0) //66.67% van de sneeuw
+				{
+					particles[i] = {x: Math.random()*W, y: -10, r: p.r, d: p.d};
+				}
+				else
+				{
+					//als sneeuw van rechts eraf gaat
+					if(Math.sin(angle) > 0)
+					{
+						//komen van links
+						particles[i] = {x: -5, y: Math.random()*H, r: p.r, d: p.d};
+					}
+					else
+					{
+						//komen van rechts
+						particles[i] = {x: W+5, y: Math.random()*H, r: p.r, d: p.d};
+					}
+				}
+			}
+		}
+	}
+	
+	//animation loop
+	setInterval(draw, 23);
+}
+</script>
+</body>
+</html>

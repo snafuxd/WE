@@ -1,0 +1,847 @@
+{
+	"approved" : true,
+	"description" : "A simple audio effect that is applied to shapes. These can be one of the built in shapes/patterns, something you draw, or importing one of the svg examples.\n\n[h1][b]This wallpaper has been tweaked for the current beta version, but I think it will do fairly well with the current release as well.[/b][/h1]\n\n\n\n[h1]Tips[/h1]\n[list]\n[*] To draw, find the \"enable drawing\" option lower down. If you really want to draw a lot, set \"detail\" setting to low and avoid the fill option :)\n[*] Importing SVG requires the draw optoin to be enabled. Find the \"enable drawing\" option lower down. Then hold the mouse down on the screen for 1 second and a menu should popup. Select Import and try one of the SVG's listed in the related discussion. ( linked below )\n[*] There is a CPU usage warning in the wallpaper, but it needs to know how many cpu cores you have to calculate the estimate somewhat accurately :) You can find those setings that at the bottom if its bothering you.\n[*]Made a mistake. Hold left mouse button down on the line and select \"select\" when menu pops up. Then click delete button :)\n[/list]\n\n[h1]Options[/h1]\n[list]\n[*] Render audio as a bunch of different shapes\n[*] Draw your own shapes ( won't store atm tho )\n[*] Position/Scale options\n[*] Background image/color\n[*] Some tweak settings\n[*] CPU usage warning in case you set your settings to high ;)\n[/list]\n\n[h1]Additional Examples[/h1]\nEbsolas wallpaper animated: https://media.giphy.com/media/l3q2I8HfvRWpo5fzi/source.gif\n\n[h1]SVG importing[/h1]\nDetails of limitations and how to create a nice svg from a black and white image here: http://steamcommunity.com/workshop/filedetails/discussion/850923796/135507548128855923/\n\n2 SVG examples can be found in %steam%\\steamapps\\workshop\\content\\431960\\850923796\\svg-examples\n\nI made a list for other svg files here ( If you made an svg, please share so we can add it to the list of compatible svgs.  ) : \nhttp://steamcommunity.com/workshop/filedetails/discussion/850923796/135507548129231622/\n\nThe example in the screenshot it the thunderdome logo. Can be found in the list above. Ebsolas has a discussion explaining how to make his example screenshot.\n\n\n\n[h1]Todo[/h1]\n[list]\n[*] Store drawing between sessions. Currently great for doodling tho :)\n[*] Adjust /Tweak some settings, eq frequencies for examples are not accurate for low frequencies.\n[/list]\n\n[h1]Updates[/h1]\n[list]\n[*]Added extra drawing options ( scribble, straight line, circle and oval )\n[*]Added autosave for drawings ( note that recent edits might not be synced to disk by CEF and it can take a minute betfore it is really saved. )\n[*] Added menu for allowing extra functionality\n[/list]\n[list]\n[*]Fixed scribble option not being default drawing method\n[*]Fixed lines becoming shorter after loading\n[*]Can now select a line and get delete,scale,move,rotate options\n[*]Simplified menu a little for time being.\n[/list]\n[list]\n[*]Fixed selecting shape not overwriting autosave.\n[*]Added yin yang shape.\n[/list]\n[list]\n[*]Added glow effect \n[*]Added atom shape.\n[*]Added animation when there is no audio ( you can disable it via settings, under \"other\" )\n[/list]\n[list]\n[*]Adjusted height scale to have more detail on the lower values. So the \"height\" might seem lower than it used to be after you got the update.\n[*]Can fade background image to background color. Implemented to darken background images for example.\n[*]Added very basic svg import .. Discussion detailing and explaining a bit coming soon. There is also a bug where you might get an extra line after importing. I couldn't find the cause ( maybe just how sloppy and how fast ive been adding things ), but believe I have patched it until I can find the real cause.\n[*]Fixed bug with selecting items when position wasn't set to 0,0. There are still a few situations where it might not properly select ( within loops or just outside the edge ), but in general it should help.\n[/list]\n[list]\n[*]Added option that adjusts the detail per line segment based on its length, so it will give longer lines more detail than shorter ones. It is on by default. This will also automatically increase the detail if you enlarge the drawing with the size option. This gives more balanced visuals, but you can turn it off if you want.\n[*]Re-did menu. It's not perfect but wanted to release the new one as it does fix issues with where the menu items would be outside of the screen. \n[*]Filename is now automatically removed after import so you can reselect the same file easier when testing your SVG's\n[/list]\n[list]\n[*]SVG import should center the imports better now. \n[/list]\n[list]\n[*]Added global rotation option, allows rotating your imports a bit for example. \n[*]Correct label for Color Rotation ( was mistakenly Color Gradient )\n[*]Added option to adjust height of idle animation. The setting is still tied in with the height thought.\n[*]Lowered the details when using \"Detail - length based\" a little. \n[/list]\n[list]\n[*]moved \"select\" option to top of menu\n[*]loading svg now shows a progress bar \n[/list]\n[list]\n[*]Fixed drawing straight lines not working\n[*]Think i finally fixed the problem with it drawing while the SVG panel was open. \n[*]Relabeled \"circle patterns\" to \"circles\" to make the number readable. \n[*]Added 6 built in patterns spiral galaxy type swirl 3 ( ccw and cw ) , and a more denser variation swirl 4( ccw and cw ), and mixes of those as circles 5 & 6.\n[*]Redid the frequency scaling again after I figured out it was still not correctly balanced. \n[*]Added  animations that slowly moves the frequency scaling back and forther for some movement. It can be cpu intensive if you use this combined with a high detail value. I can't use precalculated positions anymore when its turned on and have to recalculate them each frame, combine that with the detail options that cause even more positions to be calculated and we have a cpu hog.\n[*]Added some extra % to my cpu usage calculation as it seemed to be off in certain situations ( probably related to the time i cant measure in chromium ). Rather have it warn a little sooner.\n[/list]\n[list]\n[*]Added square and rectangle option. The center point ( where the bass frequencies are on default ) can be at the top or bottom depending on in which direction you drew it.\n[*]Oval has the same top/bottom center positioning as rectangles above, not always on the bottom anymore.\n[*]Circles now position the center point ( bass frequencies ) where you release the mouse button, not always on the bottom anymore.\n[/list]\n[list]\n[*]Fixed bug that crept in last update related to previous updated\n[*]Added 2 new \"render methods\". Both based on zigzagging the outline from one side to the other creating peaks. \n[/list]\n[list]\n[*]Replace Background Transparency, with Background Opacity.\n[*]Adding in background slideshow. \n[*]Moved background settings down in the settings panel, and moved back shape options up. Wanted the available premade shapes to be more visible. \n[/list]",
+	"file" : "index.html",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"allowDrawing" : 
+			{
+				"order" : 196,
+				"text" : "<strong>Enable Drawing!</strong>",
+				"type" : "bool",
+				"value" : false
+			},
+			"allowDrawing1" : 
+			{
+				"order" : 197,
+				"text" : "<small>Draw on screen with mouse. To clear the screen, import and other options hold the left mouse button down for 1 second without moving the mouse. Selecting a shape will also overwrite the screen.<br><br><strong>Note that drawings you made are only saved to disk in the background every minute or few minutes. I do update the storage instantly, but chromium doesnt sync every time I change it. If you want to be sure your edits are saved, wait a while before changing wallpapers or closing the program..</strong></small>",
+				"type" : "text"
+			},
+			"allowDrawing_" : 
+			{
+				"order" : 195,
+				"text" : "<h4>Drawing</h4>",
+				"type" : "text"
+			},
+			"animateWhenSilent" : 
+			{
+				"order" : 362,
+				"text" : "Animate when Silent",
+				"type" : "bool",
+				"value" : true
+			},
+			"animateWhenSilentHeight" : 
+			{
+				"max" : 100,
+				"min" : 1,
+				"order" : 363,
+				"text" : "Animate when Silent Height (%)",
+				"type" : "slider",
+				"value" : 50
+			},
+			"background" : 
+			{
+				"order" : 60,
+				"text" : "<h4>Background</h4>",
+				"type" : "text"
+			},
+			"backgroundColor" : 
+			{
+				"order" : 61,
+				"text" : "Background Color",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"backgroundImage" : 
+			{
+				"order" : 62,
+				"text" : "Background Image",
+				"type" : "file",
+				"value" : ""
+			},
+			"backgroundOpacity" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 63,
+				"text" : "Background Image Opacity (%)",
+				"type" : "slider",
+				"value" : 100
+			},
+			"backgroundSize" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "Cover",
+						"value" : "cover"
+					},
+					{
+						"label" : "Fit",
+						"value" : "contain"
+					}
+				],
+				"order" : 64,
+				"text" : "Background Size",
+				"type" : "combo",
+				"value" : "cover"
+			},
+			"color1" : 
+			{
+				"order" : 201,
+				"text" : "Color Gradient Start",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"color2" : 
+			{
+				"order" : 202,
+				"text" : "Color Gradient Mid",
+				"type" : "color",
+				"value" : "0 1 0"
+			},
+			"color3" : 
+			{
+				"order" : 203,
+				"text" : "Color Gradient End",
+				"type" : "color",
+				"value" : "0 0 1"
+			},
+			"colorGlow" : 
+			{
+				"max" : 20,
+				"min" : 0,
+				"order" : 211,
+				"text" : "Glow Size",
+				"type" : "slider",
+				"value" : 0
+			},
+			"colorGlow0" : 
+			{
+				"order" : 210,
+				"text" : "<strong>Glow</strong><br><small>Glow has a small impact on cpu and gpu usage. Set size to 0 to disable.</small>",
+				"type" : "text"
+			},
+			"colorGlowStrength" : 
+			{
+				"max" : 3,
+				"min" : 1,
+				"order" : 211,
+				"text" : "Glow Strength",
+				"type" : "slider",
+				"value" : 2
+			},
+			"colorGradient" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "Solid Color",
+						"value" : 0
+					},
+					{
+						"label" : "Circular Gradient",
+						"value" : 1
+					},
+					{
+						"label" : "Horizontal Gradient",
+						"value" : 2
+					},
+					{
+						"label" : "Vertical Gradient",
+						"value" : 3
+					}
+				],
+				"order" : 204,
+				"text" : "Color Gradient",
+				"type" : "combo",
+				"value" : 1
+			},
+			"colorRotation" : 
+			{
+				"order" : 205,
+				"text" : "Color Rotation",
+				"type" : "bool",
+				"value" : true
+			},
+			"colors" : 
+			{
+				"order" : 200,
+				"text" : "<h4>Colors</h4>",
+				"type" : "text"
+			},
+			"cpu" : 
+			{
+				"order" : 5000,
+				"text" : "<h4>CPU Warning Settings</h4><small>Set the amount of cores your CPU has and I can adjust the processing time to a cpu usage estimation. Set the warning to 100% if you never want to see a warning.</small>",
+				"type" : "text"
+			},
+			"cpuCores" : 
+			{
+				"max" : 16,
+				"min" : 1,
+				"order" : 5001,
+				"text" : "CPU Cores",
+				"type" : "slider",
+				"value" : 4
+			},
+			"cpuPercWarning" : 
+			{
+				"max" : 100,
+				"min" : 1,
+				"order" : 5002,
+				"text" : "CPU Warning At (%)",
+				"type" : "slider",
+				"value" : 10
+			},
+			"eq" : 
+			{
+				"order" : 400,
+				"text" : "<h4>Equalizer</h4><small>Equaliser exists of 3 frequency bands to tweak the responds for certain frequencies to either focus on certain frequencies or create a more even distribution. Changing values will show the current EQ graph and resulting values in green.<br><br>Freq. values are frequency multiplied 100. So a value of 15 will result in 1500hz.</small>",
+				"type" : "text"
+			},
+			"eq1" : 
+			{
+				"max" : 160,
+				"min" : 0,
+				"order" : 401,
+				"text" : "Band 1 Freq.",
+				"type" : "slider",
+				"value" : 10
+			},
+			"eq1Strength" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 402,
+				"text" : "Band 1 Strength",
+				"type" : "slider",
+				"value" : 100
+			},
+			"eq2" : 
+			{
+				"max" : 160,
+				"min" : 0,
+				"order" : 404,
+				"text" : "Band 2 Freq.",
+				"type" : "slider",
+				"value" : 40
+			},
+			"eq2Strength" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 405,
+				"text" : "Band 2 Strength",
+				"type" : "slider",
+				"value" : 100
+			},
+			"eq3" : 
+			{
+				"max" : 160,
+				"min" : 0,
+				"order" : 407,
+				"text" : "Band 3 Freq.",
+				"type" : "slider",
+				"value" : 140
+			},
+			"eq3Strength" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 408,
+				"text" : "Band 3 Strength",
+				"type" : "slider",
+				"value" : 100
+			},
+			"eqStrength" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 416,
+				"text" : "Global Strength",
+				"type" : "slider",
+				"value" : 35
+			},
+			"eqWidth" : 
+			{
+				"max" : 30,
+				"min" : 1,
+				"order" : 415,
+				"text" : "Width",
+				"type" : "slider",
+				"value" : 27
+			},
+			"frame2MotionBlurAmount" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 310,
+				"text" : "Responsiveness (%)",
+				"type" : "slider",
+				"value" : "50"
+			},
+			"frame2Pow" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "6",
+						"value" : 8
+					},
+					{
+						"label" : "5",
+						"value" : 6
+					},
+					{
+						"label" : "4",
+						"value" : 4
+					},
+					{
+						"label" : "3",
+						"value" : 3
+					},
+					{
+						"label" : "2",
+						"value" : 2
+					},
+					{
+						"label" : "1",
+						"value" : 1.5
+					},
+					{
+						"label" : "No Change",
+						"value" : 1
+					},
+					{
+						"label" : "-1",
+						"value" : 0.66000000000000003
+					},
+					{
+						"label" : "-2",
+						"value" : 0.5
+					},
+					{
+						"label" : "-3",
+						"value" : 0.25
+					}
+				],
+				"order" : 350,
+				"text" : "Volume Scale",
+				"type" : "combo",
+				"value" : 3
+			},
+			"freqScaleAdjustment" : 
+			{
+				"max" : 100,
+				"min" : -100,
+				"order" : 340,
+				"text" : "Freq. Distribution",
+				"type" : "slider",
+				"value" : 0
+			},
+			"freqScaleAdjustmentAnim" : 
+			{
+				"order" : 341,
+				"text" : "Freq. Distribution Anim<br><small>CPU intensive when combined with high detail settings or many lines because it turns off a certain optimization and does a lot of extra calculations per frame.</small>",
+				"type" : "bool",
+				"value" : false
+			},
+			"height" : 
+			{
+				"max" : 100,
+				"min" : 1,
+				"order" : 14,
+				"text" : "Height (%)",
+				"type" : "slider",
+				"value" : 50
+			},
+			"heightCutoff" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 15,
+				"text" : "Height Cutoff (%)",
+				"type" : "slider",
+				"value" : 6
+			},
+			"interpolation" : 
+			{
+				"max" : 10,
+				"min" : 1,
+				"order" : 355,
+				"text" : "Detail",
+				"type" : "slider",
+				"value" : 3
+			},
+			"interpolationBalanced" : 
+			{
+				"order" : 356,
+				"text" : "Detail - Length Based",
+				"type" : "bool",
+				"value" : true
+			},
+			"other" : 
+			{
+				"order" : 300,
+				"text" : "<h4>Other</h4>",
+				"type" : "text"
+			},
+			"position" : 
+			{
+				"order" : 20,
+				"text" : "<h4>Position & Rotation</h4><small>Click accurately and press/hold arrow keys.</small> ",
+				"type" : "text"
+			},
+			"positionX" : 
+			{
+				"max" : 3000,
+				"min" : -3000,
+				"order" : 21,
+				"text" : "X Pos. (px)",
+				"type" : "slider",
+				"value" : 0
+			},
+			"positionY" : 
+			{
+				"max" : 3000,
+				"min" : -3000,
+				"order" : 22,
+				"text" : "Y Pos. (px)",
+				"type" : "slider",
+				"value" : 0
+			},
+			"radius" : 
+			{
+				"max" : 1000,
+				"min" : 1,
+				"order" : 13,
+				"text" : "Size (%)<br><small>Bigger = more cpu usage</small>",
+				"type" : "slider",
+				"value" : 150
+			},
+			"render" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "lines",
+						"value" : 1
+					},
+					{
+						"label" : "outline",
+						"value" : 2
+					},
+					{
+						"label" : "outline ( zigzag )",
+						"value" : 8
+					},
+					{
+						"label" : "lines & outline",
+						"value" : 3
+					},
+					{
+						"label" : "lines & outline ( zigzag )",
+						"value" : 9
+					},
+					{
+						"label" : "fill",
+						"value" : 4
+					}
+				],
+				"order" : 301,
+				"text" : "Render Method<br><small>Ordered by cpu usage</small>",
+				"type" : "combo",
+				"value" : 1
+			},
+			"reverseAudio" : 
+			{
+				"order" : 360,
+				"text" : "Reverse Frequencies",
+				"type" : "bool",
+				"value" : false
+			},
+			"rotation" : 
+			{
+				"max" : 180,
+				"min" : -180,
+				"order" : 23,
+				"text" : "Rotation (deg)",
+				"type" : "slider",
+				"value" : 0
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "Scheme color",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"shape" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "Circle",
+						"value" : "circle"
+					},
+					{
+						"label" : "Heart",
+						"value" : "heart"
+					},
+					{
+						"label" : "Butterfly",
+						"value" : "butterfly"
+					},
+					{
+						"label" : "Peace",
+						"value" : "peace"
+					},
+					{
+						"label" : "Pokeball",
+						"value" : "pokeball"
+					},
+					{
+						"label" : "Yin Yang",
+						"value" : "yinyang"
+					},
+					{
+						"label" : "Atom",
+						"value" : "atom"
+					},
+					{
+						"label" : "H. line",
+						"value" : "h-line"
+					},
+					{
+						"label" : "2x H. line ",
+						"value" : "h-line2"
+					},
+					{
+						"label" : "3x H. line ",
+						"value" : "h-line3"
+					},
+					{
+						"label" : "V. line",
+						"value" : "v-line"
+					},
+					{
+						"label" : "2x V. line",
+						"value" : "v-line2"
+					},
+					{
+						"label" : "3x V. line",
+						"value" : "v-line3"
+					},
+					{
+						"label" : "Plus",
+						"value" : "plus"
+					},
+					{
+						"label" : "Cross",
+						"value" : "cross"
+					},
+					{
+						"label" : "Cross 2",
+						"value" : "cross2"
+					},
+					{
+						"label" : "Diamond",
+						"value" : "diamond"
+					},
+					{
+						"label" : "Square",
+						"value" : "square"
+					},
+					{
+						"label" : "Swirl 1 ccw",
+						"value" : "swirl"
+					},
+					{
+						"label" : "Swirl 1 cw",
+						"value" : "swirl2"
+					},
+					{
+						"label" : "Swirl 2 ccw",
+						"value" : "swirl3"
+					},
+					{
+						"label" : "Swirl 2 cw",
+						"value" : "swirl4"
+					},
+					{
+						"label" : "Swirl 3 ccw",
+						"value" : "swirl5"
+					},
+					{
+						"label" : "Swirl 3 cw",
+						"value" : "swirl6"
+					},
+					{
+						"label" : "Swirl 4 ccw",
+						"value" : "swirl7"
+					},
+					{
+						"label" : "Swirl 4 cw",
+						"value" : "swirl8"
+					},
+					{
+						"label" : "Circles 1",
+						"value" : "circlePattern1"
+					},
+					{
+						"label" : "Circles 2",
+						"value" : "circlePattern2"
+					},
+					{
+						"label" : "Circles 3",
+						"value" : "circlePattern3"
+					},
+					{
+						"label" : "Circles 4",
+						"value" : "circlePattern4"
+					},
+					{
+						"label" : "Circles 5",
+						"value" : "circlePattern5"
+					},
+					{
+						"label" : "Circles 6",
+						"value" : "circlePattern6"
+					},
+					{
+						"label" : "Circles 7",
+						"value" : "circlePattern7"
+					},
+					{
+						"label" : "Hemp",
+						"value" : "cannabis"
+					},
+					{
+						"label" : "Biohazard",
+						"value" : "hazard"
+					},
+					{
+						"label" : "Pentagram",
+						"value" : "pentagram"
+					}
+				],
+				"order" : 11,
+				"text" : "Shape",
+				"type" : "combo",
+				"value" : "circle"
+			},
+			"size" : 
+			{
+				"order" : 10,
+				"text" : "<h4>Shape</h4>",
+				"type" : "text"
+			},
+			"slideshow" : 
+			{
+				"order" : 74,
+				"text" : "<h4>Background Slideshow</h4>",
+				"type" : "text"
+			},
+			"slideshowFolder" : 
+			{
+				"mode" : "fetchall",
+				"order" : 75,
+				"text" : "Image Folder",
+				"type" : "directory"
+			},
+			"slideshowInterval" : 
+			{
+				"max" : 120,
+				"min" : 1,
+				"order" : 76,
+				"text" : "Image Interval",
+				"type" : "slider",
+				"value" : 5
+			},
+			"slideshowIntervalMultiplier" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "seconds",
+						"value" : 1
+					},
+					{
+						"label" : "minutes",
+						"value" : 60
+					},
+					{
+						"label" : "hour",
+						"value" : 3600
+					}
+				],
+				"order" : 77,
+				"text" : "Image Interval Units",
+				"type" : "combo",
+				"value" : 1
+			},
+			"slideshowShowTransitions" : 
+			{
+				"condition" : "slideshowUseTransitions.value",
+				"order" : 79.000100000000003,
+				"text" : "Choose Transitions",
+				"type" : "bool",
+				"value" : false
+			},
+			"slideshowTransFade" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.010000000000005,
+				"text" : "Fade",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransMoveBottom" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.109999999999999,
+				"text" : "Move From Bottom",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransMoveLeft" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.079999999999998,
+				"text" : "Move From Left",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransMoveRight" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.090000000000003,
+				"text" : "Move From Right",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransMoveTop" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.099999999999994,
+				"text" : "Move From Top",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransShuffleBottom" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.150000000000006,
+				"text" : "Shuffle From Bottom",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransShuffleLeft" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.120000000000005,
+				"text" : "Shuffle From Left",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransShuffleRight" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.129999999999995,
+				"text" : "Shuffle From Right",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransShuffleTop" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.140000000000001,
+				"text" : "Shuffle From Top",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomHorzIn" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.040000000000006,
+				"text" : "Zoom Horz In",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomHorzOut" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.049999999999997,
+				"text" : "Zoom Horz Out",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomIn" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.019999999999996,
+				"text" : "Zoom In",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomOut" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.030000000000001,
+				"text" : "Zoom Out",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomVertIn" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.060000000000002,
+				"text" : "Zoom Vert In",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomVertOut" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.069999999999993,
+				"text" : "Zoom Vert Out",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTrans_" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 79.001000000000005,
+				"text" : "<h4><small>If you toggle an animation on, it will be used for the next transition.</small></h4>",
+				"type" : "text"
+			},
+
+			"slideshowTransitionDuration" : 
+			{
+				"max" : 10,
+				"min" : 0,
+				"order" : 78,
+				"text" : "Transition Duration",
+				"type" : "slider",
+				"value" : 2
+			},
+			"slideshowUseTransitions" : 
+			{
+				"order" : 79,
+				"text" : "Use Transitions<br><small>Will increase cpu/gpu usage a little for the duration of each transition.</small>",
+				"type" : "bool",
+				"value" : false
+			}
+		},
+		"supportsaudioprocessing" : true
+	},
+	"preview" : "preview.jpg",
+	"tags" : [ "Abstract" ],
+	"title" : "Audio Scratchboard",
+	"type" : "web",
+	"visibility" : "public",
+	"workshopid" : 850923796
+}

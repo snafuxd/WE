@@ -1,0 +1,1246 @@
+<html>
+	<head>
+		<style>
+			html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: black; }		
+			canvas { position: fixed; top: 0; left; 0; }
+			#canvas { display: block;  z-index: 9999;}
+			#canvasBg { filter: blur( 10px ); }
+			#fps { position: absolute; top: 0; left: 0; padding: 10px; color: white; z-index: 10001; display: none; }	
+			#cpu-warning { display: none; position: absolute; top: 0; left: 0; right: 0; background: black; padding: 50px; color: white; text-align: center; font-family: sans-serif; font-size: 1.5em; z-index: 10000}
+			#cpu-warning h2 {color: red;} 
+			#time{   
+				position: absolute; 
+				top: 50%; 
+				left: 50%;
+				color: black;
+			}
+			#timelabel {
+				position: absolute;
+				width: 200px;
+				height: 50px;
+				margin-left: -100px;
+				margin-top: -25px;
+				line-height: 50px;
+				text-align: center;
+				font-size: 40px;
+				font-weight: 800;
+				font-family: "courier new",monospace;
+				
+			}
+			
+			#time-hour,
+			#time-minute {
+				letter-spacing: -0.10em;
+			}
+			
+			#time-seperator,
+			#time-seperator2 {
+				width: 0.5em;
+				text-align: center;
+			}
+			#time-postfix { 
+				font-size: 0.6em;	
+			}
+			
+		</style>
+		<style>
+			#background-wrapper { position: fixed; width: 100%; height: 100%; top: 0; left: 0; }
+			#background-image1 { position: absolute; width: 100%; height: 100%; top: 0; left: 0;  }	
+			#background-image2 { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }	
+			#background-image1-wrapper { position: absolute; width: 100%; height: 100%; top: 0; left: 0;  }	
+			#background-image2-wrapper { position: absolute; width: 100%; height: 100%; top: 0; left: 0;  }	
+		</style>
+		
+		<!-- 
+			log.js : overwrites console.log and console.error to display messages within the wallpaper. 
+		-->
+		<script src="log.js"></script>
+		
+		<!-- 
+			timer.js : simple timer class to measure performance 
+		-->
+		<script src="timer.js"></script>
+		
+		<!-- 
+			audioarray.js : has a class that holds data for one channel ( left or right ) of the fft data with some
+							useful functions to access it 
+		-->
+		<script src="audioarray.js"></script>
+		
+		<!-- 
+			audiodata.js : has a class that holds 2 audiodata instances ( left/right channels ) with some useful
+						   functions to access it 
+		-->
+		<script src="audiodata.js"></script>
+		
+		<!-- 
+			audiocollection.js : is currently unused, i have used this to bunch up and average multiple fft data 
+								 frames that might occur within one render frame when rendering at a low FPS 
+		-->
+		<script src="audiocollection.js"></script>
+		
+		
+		<!-- 
+			utils.js : contains some functions for processing the properties as well as a function to render 
+					  the data in an audioframe object
+		 -->
+		<script src="utils.js"></script>
+		
+		<!-- 
+			audioframe.js : somewhat misnamed class written to contain all the audio processing demonstrated 
+							with configurable options 
+		-->
+		<script src="audioframe.js"></script>
+		
+		
+		<script src="delayed.js"></script>
+		<script src="circle.js"></script>
+		
+		
+		
+		<script src="background.js"></script>		
+		<link href="background-anim.css" rel="stylesheet" type="text/css">
+	</head>
+	<body>
+		<div id="background-wrapper">
+			<div id="background-image1-wrapper"><div id="background-image1"></div></div>
+			<div id="background-image2-wrapper"><div id="background-image2"></div></div>
+		</div>
+		<canvas id="canvasBg"></canvas>
+		<canvas id="canvas"></canvas>
+		<div id="fps"></div>
+		<div id="cpu-warning">
+			<h2>CPU Usage Warning!</h2>
+			<p>
+				The CPU usage of this wallpaper is fairly high at the moment. Lower some settings. 
+				<br>
+				This might be caused by:<br>
+				<small>
+					High responsiveness.<br>
+					Many columns and/or rows configured.
+				</small>
+				<br>
+				<br>
+				Estimated CPU usage: <span id="usage-label"></span>
+			</p>
+		</div>
+		
+		<!-- all main scripting -->
+		<script>
+			// hide log & timer
+			log.hide();
+			timer.hide();
+			
+			
+			// define global variables
+			var canvas = null;
+			var context = null;
+			var canvasBg = null;
+			var contextBg = null;
+			
+			// variables regarding use fps settings & frameskipping
+			var targetFramerate = 30; // wallpaper engine will supply us with the target framerate and we will use a sloppy frameskipping mechanism to adjust to that.
+			var nextRenderTimestamp = 0; // used from frameskipping to determine if current time is before or after we should render the next frame (see render function)
+			
+			// variable regarding fps
+			var fpsElement = null;
+			var fpsPrevUpdate = 0;
+			var fpsFrameCount = 0;
+			var fpsRenderTime = 0;
+			var cpuDrawCalls = 0;
+			
+			var cpuWarningVisible = false;
+			var cpuWarningElement = null;//cpu-warning
+			var cpuWarningLabel = null;//usage-label
+			
+			var cpuCores = 4;
+			var cpuWarningAt = 10;
+						
+			// screen width & height ( maintained via onResize event )
+			var width, height;
+			
+			var barPeakDetectionRange = 12;
+			var barNeighbourDetectionRange = 12;
+			var barMoveSpeed = 25;
+			var barOpacityMin = 0;
+			var barOpacityMax = 1;
+			var barWidthMin = 0;
+			var barWidthMax = 10;
+			
+			var cfgLayout;
+			
+			/*
+				! audioFrame found in utils.js
+				
+				in audioFrame is where I store the audio data and do all processing of the incoming audio listener event
+				Most code regarding the wallpaper settings are found in there.
+			*/
+			var frame2; // is an AudioFrame object .. stores the "processes" data and is created in setup()
+			
+			var initialized = false;
+			var lastEqChange = -1000000000000;
+			
+			var animateWhenSilent = true;
+			var animateWhenSilentHeight = 0.01;
+			
+			var hadAudioFrame = false;
+			var isPaused = false;
+			
+			var bg;
+			var bgSettingsProxy;
+			var fnInitSlideshow;
+			
+			
+			//var currentHue = 0;						
+			
+			//var gradient = new colorGradient();
+			//var colorGradientRotateSpeed = 1;
+			
+			//var colorGlow = 0;
+			//var colorGlowStrength = 2;
+			
+			var rings = 20;
+			var slices = 128;
+			var c1 = null;
+			var c2 = null;
+			
+			/**
+			 * setup wallpaper stuff
+			 **/
+			function setup()
+			{
+				bg = new Background( 	document.body, 
+										document.getElementById('background-image1' ), 
+										document.getElementById('background-image2' ), 
+										document.getElementById('background-image1-wrapper' ), 
+										document.getElementById('background-image2-wrapper' ) );
+										
+				// delay initialisation until we got the first properties
+				fnInitSlideshow = function() { 
+					bg.play(true); 	 // start the slideshow loop
+					fnInitSlideshow = null;	
+				}
+				
+				cpuWarningElement = document.getElementById('cpu-warning');
+				cpuWarningLabel = document.getElementById('usage-label'); 
+				
+								
+				// arguments are the background instance and assigning the property names
+				// leave a property out if you dont use it or set it to null
+				bgSettingsProxy = new BackgroundSettingsProxy( bg, {
+					'image-file': 'backgroundImage', //  setting of type file
+					'image-folder': 'slideshowFolder', //  setting of type directory
+					'image-opacity': 'backgroundOpacity', //  setting of type slider/combo with values 0 - 100 
+					
+					'slideshow-use-transitions': 'slideshowUseTransitions', // setting of type bool/combo with true/false ( numeric values 0 and 1 should work too )
+					'slideshow-transition-duration': 'slideshowTransitionDuration', // setting of type slider/combo with values 0 to 3600 ( 1 hour )
+					'slideshow-interval': 'slideshowInterval', // setting of type slider/combo with int values
+					'slideshow-interval-multiply': 'slideshowIntervalMultiplier', // setting of type slider/combo with int values
+					
+					'color-1': 'backgroundColor', //  setting of type color ( or combo if you set values to color notation, aka '1 0 0' for red )
+					
+					'slideshow-transition-fade': 'slideshowTransFade',
+					'slideshow-transition-fade-in': 'slideshowTransFadeIn',
+					'slideshow-transition-fade-out': 'slideshowTransFadeOut',
+					'slideshow-transition-zoom-in': 'slideshowTransZoomIn',
+					'slideshow-transition-zoom-out': 'slideshowTransZoomOut',
+					'slideshow-transition-zoom-horz-in': 'slideshowTransZoomHorzIn',
+					'slideshow-transition-zoom-horz-out': 'slideshowTransZoomHorzOut',
+					'slideshow-transition-zoom-vert-in': 'slideshowTransZoomVertIn',
+					'slideshow-transition-zoom-vert-out': 'slideshowTransZoomVertOut',
+					'slideshow-transition-move-left': 'slideshowTransMoveLeft',
+					'slideshow-transition-move-right': 'slideshowTransMoveRight',
+					'slideshow-transition-move-top': 'slideshowTransMoveTop',
+					'slideshow-transition-move-bottom': 'slideshowTransMoveBottom',
+					'slideshow-transition-shuffle-left': 'slideshowTransShuffleLeft',
+					'slideshow-transition-shuffle-right': 'slideshowTransShuffleRight',
+					'slideshow-transition-shuffle-top': 'slideshowTransShuffleTop',
+					'slideshow-transition-shuffle-bottom': 'slideshowTransShuffleBottom'
+				});
+						
+				fpsElement = document.getElementById('fps');
+				fpsElement.style.display = 'block';
+				
+				//bgTintElement = document.getElementById('tint'); 
+				
+				canvas = document.getElementById('canvas'); // reference to our canvas element
+				context = canvas.getContext('2d');  // reference to our context
+				
+				canvasBg = document.getElementById('canvasBg'); // reference to our canvas element
+				contextBg = canvasBg.getContext('2d');  // reference to our context
+				
+								
+				// create container to store processed data
+				frame2 = new AudioFrame({
+					normalize: false,
+					normalizeFactor: 0.98,
+					motionBlur: false,
+					motionBlurFactor: 0.666,
+					smooth: false,
+					smoothFactor: 0.5,
+					powerOf: 1,
+					mono: false
+				});
+				
+				
+				c1 = new circle( 200, 500, 1, slices/1, rings );
+				c1.setRotationSpeed( -15 );
+				c1.setPosition( -500, 0 );
+				
+				c2 = new circle( 200, 10, 1, slices/1, rings );
+				c2.setRotationSpeed( 15 );
+				c2.setPosition( +500, 0 );
+					
+				// dd = new dotDisplay( 'rgba( 255, 0, 0, alpha)', 5, 5 );
+				 //dd.setSize( 200, 100, 100, 100 );
+				 
+				 //td = new timeDisplay( 'rgba( 255, 0, 0, alpha)', 100, 200, 300, 100 );
+			}
+			
+			/**
+			 * processing anything regarding frameskipping
+			 *
+			 * @returns true when should skip
+			 **/
+			function shouldSkipFrame( timestamp )
+			{
+				// should we skip this frame?
+				
+				if( timestamp < nextRenderTimestamp ) {
+					return true;
+				}
+				
+				// update time for next frame to render
+				var frameInterval = 1000 / targetFramerate;		
+				nextRenderTimestamp = Math.floor( timestamp / frameInterval ) * frameInterval + frameInterval;
+				return false;
+				
+			}
+			
+			/**
+			 * measures framerate & updates framerate label
+			 **/
+			function updateFps( timestamp )
+			{ 
+				if( timestamp > fpsPrevUpdate + 1000 )
+				{
+					var diff = ( timestamp - fpsPrevUpdate ) / 1000; // time diff in seconds
+					var fps = fpsFrameCount / diff; // adjust framerate to exactly 1 second 
+					
+					
+					
+					//fpsElement.innerText = true // simple way of hiding fps
+					//						? fps.toFixed(1) + ' FPS / ' + fpsRenderTime + 'ms/sec'
+					//						: '';
+					
+					
+					// 1% + influence of fps rate on est + code run time ( accurate ) + cpu draw calls * estimate per call
+					var cpuUsage = 1 + fps / 10 + (fpsRenderTime/10/cpuCores) + cpuDrawCalls*0.0004;
+					//cpuUsage *= 1.3;
+					if( cpuUsage > 99 ) cpuUsage = 99;
+					
+					fpsElement.innerHTML = true // simple way of hiding fps
+											? fps.toFixed(1) + ' FPS<br>script execution time: ' + fpsRenderTime.toFixed(2) + 'ms<br>' + cpuDrawCalls + ' draw calls/sec<br>est. cpu usage: '  + ( cpuUsage ).toFixed(1) + '% '
+											: '';
+					
+					
+					if( cpuWarningAt < cpuUsage && !cpuWarningVisible )
+					{
+						cpuWarningVisible = true;
+						cpuWarningElement.style.display = 'block';
+						cpuWarningLabel.innerText = ( cpuUsage ).toFixed(0) + '%';
+					}
+					else if( cpuWarningAt > cpuUsage && cpuWarningVisible )
+					{
+						cpuWarningVisible = false;
+						cpuWarningElement.style.display = 'none';
+					}
+					else if( cpuWarningVisible ) {
+						cpuWarningLabel.innerText = ( cpuUsage ).toFixed(0) + '%';
+					}
+					
+					fpsFrameCount = 0;
+					fpsPrevUpdate = timestamp;
+					fpsRenderTime = 0;
+					cpuDrawCalls = 0;
+					
+					
+				}
+				fpsFrameCount++;
+			}
+			
+			//var h = 0;
+			var prevTimestamp;
+			var timeDiff;
+			var frameCount = 0;
+			
+			//var dd;
+			//var td;
+			/**
+			 * render wallpaper
+			 **/
+			function render( timestamp ) // requestAnimationFrame supplies its own timestamp. no need for performance.now();
+			{			
+				frameCount++;
+				var t0 = performance.now();
+				timestamp = timestamp || performance.now();
+				if( timestamp > 3000 ) initialized = true;
+				
+				// queue next frame            
+				//window.requestAnimationFrame( render );
+				
+				// frame skipping to maintain user selected framerate
+				if( isPaused || shouldSkipFrame( timestamp ) ) {// || ( !hadAudioFrame && c1.rotSpeed == 0 && (!c2.enabled || c2.rotSpeed == 0 ) ) ){
+					var t1 = performance.now();
+					fpsRenderTime += t1 - t0;
+					setTimeout( render, isPaused ? 1000 : 8.33 );
+					return;
+				} 			
+				
+				//currentHue = colorGradientRotateSpeed > 0 ? timestamp * 360 * colorGradientRotateSpeed / 10000 : 0;
+				hadAudioFrame = false;		
+				
+				timeDiff = timestamp - prevTimestamp;
+				if( isNaN(timeDiff) || timeDiff < 0  ) timeDiff = 1;
+				prevTimestamp = timestamp;
+				
+				
+				//
+				// now on to actual render some stuff				
+				//
+				try {
+					timer.start('render');
+					
+					// render a black background
+					//context.fillStyle = 'rgb( 0, 0, 0 )';
+					//context.fillRect( 0, 0, width, height );
+					//context.globalCompositeOperation = 'source-over';
+					context.globalCompositeOperation = 'destination-out';
+					context.fillStyle = 'rgba(0,0,0,1)';
+					context.fillRect(0, 0, canvas.width, canvas.height);	
+					context.globalCompositeOperation = 'screen';
+					
+					// renderAudioFrame() can found in utils.js
+						
+					c1.setAudioData( frame2.audioDataResult );
+					c2.setAudioData( frame2.audioDataResult );
+					
+					
+					c1.render( timestamp, timeDiff );
+					c2.render( timestamp, timeDiff );
+					//dd.randomize();
+					//dd.render();
+					//td.render();
+					cpuDrawCalls += c1.updatesLastFrame + c2.updatesLastFrame;
+					
+					
+					if( lastEqChange + 5000 > timestamp  ) {
+						frame2.renderEQ( context );
+					}
+					timer.stop('render');
+				}
+				catch( ex )
+				{
+					var caller_line = ex.stack.split("\n");
+					caller_line = caller_line[1];
+					var index = caller_line.indexOf("at ");
+					var clean = caller_line.slice(index+2, caller_line.length);
+					
+								
+					console.error( clean.replace( /^\s+/g, '' ).replace( /(http|file).+\//g, '' )  + ' ' + ex.message );
+				}
+				var t1 = performance.now();
+				fpsRenderTime += t1 - t0;
+				updateFps( timestamp );
+				setTimeout( render, isPaused ? 1000 : 8.33 );
+			}
+			
+			var hasInit = false; // initialisation is simply triggered by first audioData event
+			var onInit = function()
+			{
+				window.requestAnimationFrame( render );
+				onInit = null;
+			}
+			
+			/**
+			 * called on window/screen resize
+			 **/
+			function onResize() {
+				// update width/height
+				width = canvas.width = window.innerWidth;
+				height = canvas.height = window.innerHeight;
+				width = canvasBg.width = window.innerWidth;
+				height = canvasBg.height = window.innerHeight;
+				context.globalCompositeOperation = 'destination-out';
+				context.fillStyle = 'rgba(0,0,0,1)';
+				context.fillRect(0, 0, canvas.width, canvas.height);	
+				context.globalCompositeOperation = 'screen';
+			}
+			
+			/**
+			 * called when new fft data is avabile
+			 *
+			 * @param data Array of 128 floats 
+			 **/
+			function onAudioData( data ) 
+			{
+				var t0 = performance.now();
+				timer.start('audio update');
+				
+				try {
+					// update data in the 2 frames
+					frame2.update( data );
+					if( !frame2.hasAudio && animateWhenSilent )
+					{
+						for( var i = 0; i < 64; i++ ) {
+							var p = i / 63;
+							var p2 = t0/(60*1000);
+							var v = Math.sin( 23 * ( p + p2 ) * Math.PI*2 )+1;
+								v += Math.cos( -31 * ( p - p2 ) * Math.PI/3 )/2;
+							v/=2;
+							data[i] = v;
+							data[i+64] = v ;
+						}
+						frame2.update( data, true );
+					}
+				}
+				catch(ex) { 
+					console.error( ex.message );
+				}				
+				hadAudioFrame = true;
+				timer.stop('audio update');
+				var t1 = performance.now();
+				fpsRenderTime += t1 - t0;
+			}
+		
+			/**
+			 * when document has been loaded, do all this stuff...
+			 *   	- setup
+			 * 		- register window resize event
+			 * 		- register audio listener
+			 * 		- set property listeners
+			 * 		- queue first frame fro rendering
+			 **/			
+			window.onload = function() 
+			{
+				setup(); // setup anything not already setup
+								
+				window.addEventListener('resize', onResize ); // in case screen resizes
+				onResize(); // call it to have width and height set correctly
+
+				// hook into wallpaper engins callback functions
+				window.wallpaperPropertyListener = {
+					applyUserProperties: function( p ) 
+					{ 
+						bgSettingsProxy.applyUserProperties( p );
+						if( fnInitSlideshow ) fnInitSlideshow();
+						try {
+							c1.applyUserSettings( 'circle1_', p );
+							c2.applyUserSettings( 'circle2_', p );
+							
+							
+							if( p.frame2Pow ) {  c1.frameData.config.powerOf =  c2.frameData.config.powerOf = getSlider( p.frame2Pow.value, 0, 100 ); } 
+							if( p.frame2MotionBlurAmount ) {  c1.frameData.config.motionBlurFactor =  c2.frameData.config.motionBlurFactor = 1 - getSlider( p.frame2MotionBlurAmount.value, 0, 100 ) / 100;  }
+							if( p.frame2SmoothAmount ) {  c1.frameData.config.smoothFactor = c2.frameData.config.smoothFactor =  getSlider( p.frame2SmoothAmount.value, 0, 100 ) / 100;  }
+							
+							if( p.eq1 ) {  frame2.config.eqFreq1 = getSlider( p.eq1.value, 0, 220 ) * 100; if(initialized) lastEqChange = performance.now(); }  
+							if( p.eq2 ) {  frame2.config.eqFreq2 = getSlider( p.eq2.value, 0, 220 ) * 100; if(initialized) lastEqChange = performance.now(); }  
+							if( p.eq3 ) {  frame2.config.eqFreq3 = getSlider( p.eq3.value, 0, 220 ) * 100; if(initialized) lastEqChange = performance.now(); }  
+							
+							if( p.eq1Strength ) {  frame2.config.eqFreq1Strength = getSlider( p.eq1Strength.value, 0, 100 ) / 100; if(initialized) lastEqChange = performance.now(); }  
+							if( p.eq2Strength ) {  frame2.config.eqFreq2Strength = getSlider( p.eq2Strength.value, 0, 100 ) / 100; if(initialized) lastEqChange = performance.now(); }  
+							if( p.eq3Strength ) {  frame2.config.eqFreq3Strength = getSlider( p.eq3Strength.value, 0, 100 ) / 100; if(initialized) lastEqChange = performance.now(); }  
+							if( p.eqWidth ) {  frame2.config.eqWidth = getSlider( p.eqWidth.value, 0, 30 ) ; if(initialized) lastEqChange = performance.now(); }  
+							if( p.eqStrength ) {  frame2.config.eqStrength = getSlider( p.eqStrength.value, 0, 100 ) / 100 ; if(initialized) lastEqChange = performance.now(); }  
+							
+							if( p.cpuCores ) {  cpuCores = getSlider( p.cpuCores.value, 1, 16 );  } 
+							if( p.cpuPercWarning ) {  cpuWarningAt = getSlider( p.cpuPercWarning.value, 1, 100 );  } 
+							if( p.otherShowFps ) { fpsElement.style.display = p.otherShowFps.value ? 'block' : 'none'; }
+							
+							if( p.animateWhenSilent ) {  animateWhenSilent = getBool( p.animateWhenSilent.value ); } 
+							if( p.animateWhenSilentHeight ) {  
+								var h = getSlider( p.animateWhenSilentHeight.value, 1, 200 )/200; 
+								h -= 0.01; h /= 0.99; h = Math.pow( h, 2 ); h *= 0.99; h += 0.01;
+								animateWhenSilentHeight = h*2;
+							} 
+							
+							if( p.circle0_ ) {
+								var v = p.circle0_.value;
+								c1.setEnabled( false );
+								c2.setEnabled( false );
+								if( v > 0 ) { c1.setEnabled( true ); }
+								if( v > 1 ) { c2.setEnabled( true ); }
+							}
+							/*
+							if( p.colorsUseCustom ) {
+								if( getBool( p.colorsUseCustom.value ) ) {
+									colorClass = colorC;
+								}
+								else {
+									colorClass = colorHR;
+								}
+							}
+							if( p.colorsUseColorRotation ) { useColorRotation = getBool( p.colorsUseColorRotation.value ); }
+							if( p.colors_r11 ) { var col = getColorAsArray( p.colors_r11.value ); colorC.setColor1( rgbToHsl( col[0], col[1], col[2], 255 ) ); }
+							if( p.colors_r12 ) { var col = getColorAsArray( p.colors_r12.value ); colorC.setColor2( rgbToHsl( col[0], col[1], col[2], 255 ) ); }
+							*/
+							/*
+							if( p.colorGradientColorCount ) {
+								gradient.setColorCount( p.colorGradientColorCount.value );
+							}
+							if( p.colorGradientRotateSpeed ) {
+								colorGradientRotateSpeed = getSlider( p.colorGradientRotateSpeed.value, 0, 100 ) / 100;
+							}
+							if( p.colorGradientColor1 ) {
+								var col = getColorAsArray( p.colorGradientColor1.value ); 
+								gradient.setColor( 0, rgbToHsl( col[0], col[1], col[2], 255 ) )
+							}
+							if( p.colorGradientColor2 ) {
+								var col = getColorAsArray( p.colorGradientColor2.value ); 
+								gradient.setColor( 1, rgbToHsl( col[0], col[1], col[2], 255 ) )
+							}
+							if( p.colorGradientColor3 ) {
+								var col = getColorAsArray( p.colorGradientColor3.value ); 
+								gradient.setColor( 2, rgbToHsl( col[0], col[1], col[2], 255 ) )
+							}
+							if( p.colorGradientColor4 ) {
+								var col = getColorAsArray( p.colorGradientColor4.value ); 
+								gradient.setColor( 3, rgbToHsl( col[0], col[1], col[2], 255 ) )
+							}
+							if( p.colorGradientColor5 ) {
+								var col = getColorAsArray( p.colorGradientColor5.value ); 
+								gradient.setColor( 4, rgbToHsl( col[0], col[1], col[2], 255 ) )
+							}
+							
+							if( p.colorGlow ) { 
+								colorGlow = getSlider( p.colorGlow.value, 0, 20 ); 
+								if( colorGlow == 0 ) canvasBg.style.display = 'none';
+								else canvasBg.style.display = 'block';
+								if( colorGlow >=1 ) colorGlow += 1;
+								canvasBg.style.filter = 'blur(' + colorGlow + (colorGlow ? 'px' : '' ) + ')';
+							}
+							if( p.colorGlowStrength ) { colorGlowStrength = getSlider( p.colorGlowStrength.value, 1, 4 );  }
+							*/
+	
+						}
+						catch( ex ) { console.log( ex.message ); }
+						if( onInit ) onInit();
+					},
+					applyGeneralProperties: function( p ) 
+					{
+						if( p.fps ) { targetFramerate = p.fps; }
+					},
+					setPaused: function( p ) 
+					{ 
+						//console.log( 'setPaused' );
+						isPaused = p ;
+						bgSettingsProxy.setPaused( p );
+					},
+				    userDirectoryFilesAddedOrChanged: function( propertyName, changedFiles ) 
+				    {
+						//console.log( 'userDirectoryFilesAddedOrChanged' );
+				    	bgSettingsProxy.userDirectoryFilesAddedOrChanged( propertyName, changedFiles );
+				    },
+				    userDirectoryFilesRemoved: function(propertyName, removedFiles) 
+				    {
+						//console.log( 'userDirectoryFilesRemoved' );
+				    	bgSettingsProxy.userDirectoryFilesRemoved( propertyName, removedFiles );
+				    }
+				};
+				
+				// register our own audio event
+				if( window.wallpaperRegisterAudioListener ) {
+					window.wallpaperRegisterAudioListener( onAudioData );
+				}
+				else {
+					console.error( 'can\'t register audio listener' );
+				}
+				
+				// start render loop by requesting first frame
+			}
+			
+			/* must be before you register the audio listener */
+			if( !window.wallpaperRegisterAudioListener ) {
+				if( onInit ) onInit();
+				var wallpaperAudioInterval = null;
+				window.wallpaperRegisterAudioListener = function( callback ) {
+					if( wallpaperAudioInterval ) {
+						// clear the older interval 
+						clearInterval( _wallpaperAudioInterval );
+						wallpaperAudioInterval = null;
+					}
+
+					// set new interval
+					var data = [ ];
+					var loops = 0;
+					wallpaperAudioInterval = setInterval( function() {
+						for( var i = 0; i < 64; i++ ){
+							var v = Math.sin( loops/50 + i/1 ); // real data can be above 1 as well
+							data[ i ] = v;
+							data[ i+64 ]= v;
+						}
+						loops++;
+						callback( data );
+					}, 33 ); // wallpaper engine gives audio data back at about 30fps, so 33ms it is
+				};
+			}
+			/*
+			function dotDisplayDot()
+			{
+				this.b = 0;
+				this.bs = 0;
+				this.be = 0;
+				this.p =0;
+				this.s = 0;
+				this.e = 0;
+				
+				this.x = 0;
+				this.y = 0;
+				this.w = 1;
+				this.h = 1;
+			}
+			
+			dotDisplayDot.prototype = {
+				setSize: function( x, y, w, h )
+				{
+					context.globalCompositeOperation = 'destination-out';
+					context.fillStyle = 'rgba( 0, 0, 0, 1 )';
+					context.fillRect( this.x-1, this.y-1, this.w+2, this.h+2 );
+					
+					this.x = x;
+					this.y = y;
+					this.w = w;
+					this.h = h;
+				},
+				setTargetValue: function( v, t, s )
+				{
+					this.bs = this.b;
+					this.be = v;
+					this.p = 0;
+					this.s = performance.now() + ( s || 0 );
+					this.e = this.s + ( t || 100 );
+				},
+				render: function( c, c2 )
+				{
+					if( this.p < 1 && this.b != this.be ) {
+						var n = performance.now();
+						this.p = 0;
+						if( this.e > this.s ) {
+							if( n > this.e ) {
+								this.p = 1;
+								this.b = this.be;
+							}
+							else {
+								this.p = ( n - this.s ) / ( this.e - this.s );
+								this.b = this.bs + ( this.be - this.bs ) * this.p;
+							}	
+						}
+						else {
+							this.p  = 1;
+							this.b = this.be;
+						}
+
+					}
+						
+						
+					context.globalCompositeOperation = 'destination-out';
+					context.fillStyle = 'rgba( 0, 0, 0, 1 )';
+					context.fillRect( this.x-1, this.y-1, this.w+2, this.h+2 );
+						
+					context.globalCompositeOperation = 'source-over';
+					context.fillStyle = c.replace('alpha', this.b );
+					context.strokeStyle = c2.replace('alpha', this.b );
+					context.lineWith = 1;
+					context.fillRect( this.x, this.y, this.w, this.h );
+					context.strokeRect( this.x, this.y, this.w, this.h )
+				}
+			}
+			
+			
+			var symbolData = {
+				'A': [
+					[0,1,1,1,0],
+					[1,0,0,0,1],
+					[1,1,1,1,1],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+				],
+				'B': [
+					[1,1,1,1,0],
+					[1,0,0,0,1],
+					[1,1,1,1,0],
+					[1,0,0,0,1],
+					[1,1,1,1,0],
+				],
+				'C': [
+					[0,1,1,1,0],
+					[1,0,0,0,1],
+					[1,0,0,0,0],
+					[1,0,0,0,1],
+					[0,1,1,1,0],
+				],
+				'D': [
+					[1,1,1,1,0],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[1,1,1,1,0],
+				],
+				'E': [
+					[1,1,1,1,1],
+					[1,0,0,0,0],
+					[1,1,1,1,0],
+					[1,0,0,0,0],
+					[1,1,1,1,1],
+				],
+				'F': [
+					[1,1,1,1,1],
+					[1,0,0,0,0],
+					[1,1,1,1,0],
+					[1,0,0,0,0],
+					[1,0,0,0,0],
+				],
+				'G': [
+					[0,1,1,1,1],
+					[1,0,0,0,0],
+					[1,0,0,1,1],
+					[1,0,0,0,1],
+					[0,1,1,1,0],
+				],
+				'H': [
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[1,1,1,1,1],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+				],
+				'I': [
+					[1,1,1,1,1],
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+					[1,1,1,1,1],
+				],
+				'J': [
+					[0,0,1,1,1],
+					[0,0,0,1,0],
+					[0,0,0,1,0],
+					[1,0,0,1,0],
+					[0,1,1,0,0],
+				],
+				'K': [
+					[1,0,0,1,0],
+					[1,0,1,0,0],
+					[1,1,0,0,0],
+					[1,0,1,0,0],
+					[1,0,0,1,0],
+				],
+				'L': [
+					[1,0,0,0,0],
+					[1,0,0,0,0],
+					[1,0,0,0,0],
+					[1,0,0,0,0],
+					[1,1,1,1,0],
+				],
+				'M': [
+					[1,0,0,0,1],
+					[1,1,0,1,1],
+					[1,0,1,0,1],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+				],
+				'N': [
+					[1,0,0,0,1],
+					[1,1,0,0,1],
+					[1,0,1,0,1],
+					[1,0,0,1,1],
+					[1,0,0,0,1],
+				],
+				'O': [
+					[0,1,1,1,0],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[0,1,1,1,0],
+				],
+				'P': [
+					[1,1,1,1,0],
+					[1,0,0,0,1],
+					[1,1,1,1,0],
+					[1,0,0,0,0],
+					[1,0,0,0,0],
+				],
+				'Q': [
+					[0,1,1,1,0],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[1,0,0,1,0],
+					[0,1,1,0,1],
+				],
+				'R': [
+					[1,1,1,1,0],
+					[1,0,0,0,1],
+					[1,1,1,1,0],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+				],
+				'S': [
+					[0,1,1,1,1],
+					[1,0,0,0,0],
+					[0,1,1,1,0],
+					[0,0,0,0,1],
+					[1,1,1,1,0],
+				],
+				'T': [
+					[1,1,1,1,1],
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+				],
+				'U': [
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[0,1,1,1,0],
+				],
+				'V': [
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[0,1,0,1,0],
+					[0,0,1,0,0],
+				],
+				'W': [
+					[1,0,0,0,1],
+					[1,0,0,0,1],
+					[1,0,1,0,1],
+					[1,0,1,0,1],
+					[0,1,0,1,0],
+				],
+				'X': [
+					[1,0,0,0,1],
+					[0,1,0,1,0],
+					[0,0,1,0,0],
+					[0,1,0,1,0],
+					[1,0,0,0,1],
+				],
+				'Y': [
+					[1,0,0,0,1],
+					[0,1,0,1,0],
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+				],
+				'Z': [
+					[1,1,1,1,1],
+					[0,0,0,1,0],
+					[0,0,1,0,0],
+					[0,1,0,0,0],
+					[1,1,1,1,1],
+				],
+				'0': [
+					[0,1,1,1,0],
+					[1,0,0,1,1],
+					[1,0,1,0,1],
+					[1,1,0,0,1],
+					[0,1,1,1,0],
+				],
+				'1': [
+					[0,0,1,0,0],
+					[0,1,1,0,0],
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+				],
+				'2': [
+					[1,1,1,1,0],
+					[0,0,0,0,1],
+					[0,1,1,1,0],
+					[1,0,0,0,0],
+					[1,1,1,1,1],
+				],
+				'3': [
+					[1,1,1,1,0],
+					[0,0,0,0,1],
+					[0,0,1,1,0],
+					[0,0,0,0,1],
+					[1,1,1,1,0],
+				],
+				'4': [
+					[1,0,0,1,0],
+					[1,0,0,1,0],
+					[1,1,1,1,1],
+					[0,0,0,1,0],
+					[0,0,0,1,0],
+				],
+				'5': [
+					[1,1,1,1,0],
+					[1,0,0,0,0],
+					[1,1,1,1,0],
+					[0,0,0,0,1],
+					[1,1,1,1,0],
+				],
+				'6': [
+					[0,1,1,1,0],
+					[1,0,0,0,0],
+					[1,1,1,1,0],
+					[1,0,0,0,1],
+					[0,1,1,1,0],
+				],
+				'7': [
+					[1,1,1,1,1],
+					[0,0,0,1,0],
+					[0,0,1,0,0],
+					[0,1,0,0,0],
+					[1,0,0,0,0],
+				],
+				'8': [
+					[0,1,1,1,0],
+					[1,0,0,0,1],
+					[0,1,1,1,0],
+					[1,0,0,0,1],
+					[0,1,1,1,0],
+				],
+				'9': [
+					[0,1,1,1,0],
+					[1,0,0,0,1],
+					[0,1,1,1,1],
+					[0,0,0,0,1],
+					[0,1,1,1,0],
+				],
+				'-': [
+					[0,0,0,0,0],
+					[0,0,0,0,0],
+					[0,1,1,1,0],
+					[0,0,0,0,0],
+					[0,0,0,0,0],
+				],
+				'+': [
+					[0,0,0,0,0],
+					[0,0,1,0,0],
+					[0,1,1,1,0],
+					[0,0,1,0,0],
+					[0,0,0,0,0],
+				],
+				'!': [
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+					[0,0,1,0,0],
+					[0,0,0,0,0],
+					[0,0,1,0,0],
+				],
+				'?': [
+					[0,1,1,1,0],
+					[0,0,0,0,1],
+					[0,0,1,1,0],
+					[0,0,0,0,0],
+					[0,0,1,0,0],
+				],
+				':': [
+					[0,0,0,0,0],
+					[0,0,1,0,0],
+					[0,0,0,0,0],
+					[0,0,1,0,0],
+					[0,0,0,0,0],
+				],
+				'.': [
+					[0,0,0,0,0],
+					[0,0,0,0,0],
+					[0,0,0,0,0],
+					[0,0,0,0,0],
+					[0,0,1,0,0],
+				]
+			};
+			
+			
+			function dotDisplay(c,w,h)
+			{
+				this.c = c;
+				this.gw = w;
+				this.gh = h;
+				this.g = [];
+				for( var i = 0; i < this.gw; i++)
+				{
+					this.g[i] = [];
+						for( var j = 0; j < this.gh; j++)
+					{
+						this.g[i][j] = new dotDisplayDot();
+					}
+				}
+				
+				this.x = 0;
+				this.y = 0;
+				this.w = 0;
+				this.h = 0;
+				this.m = 1;
+			}
+			
+			dotDisplay.prototype = 
+			{
+				randomize: function()
+				{
+					for( var i = 0; i < this.gw; i++)
+					{
+						for( var j = 0; j < this.gh; j++)
+						{
+							if( this.g[i][j].b == this.g[i][j].be ) {
+								this.g[i][j].setTargetValue( Math.random(), 200, ( i + j ) * 5 );							
+							}
+						}
+					}
+				},
+				setMatrix: function( dt )
+				{
+					for( var i = 0; i < this.gw; i++)
+					{
+						for( var j = 0; j < this.gh; j++)
+						{
+							var v = dt[j][i];
+							this.g[i][j].setTargetValue( v, 100, ( j ) * 100 );							
+						}
+					}
+				},
+				setSize: function( x, y, w, h )
+				{
+					context.globalCompositeOperation = 'destination-out';
+					context.fillStyle = 'rgba( 0, 0, 0, 1 )';
+					context.fillRect( this.x, this.y, this.w, this.h );
+					
+					this.x = x;
+					this.y = y;
+					this.w = w;
+					this.h = h;
+					this.updatePositions();
+				},
+				setMargin: function( m )
+				{
+					this.m = m;
+					this.updatePositions();
+				},
+				updatePositions: function( )
+				{
+					for( var i = 0; i < this.gw; i++)
+					{
+						for( var j = 0; j < this.gh; j++)
+						{
+							var l = this.x + this.w * ( i / this.gw ) + this.m;
+							var r = this.x + this.w * ( (i+1) / this.gw ) - this.m;
+							var t = this.y + this.h * ( j / this.gh ) + this.m;
+							var b = this.y + this.h *  ( (j+1) / this.gh ) - this.m;
+							if( l > r ) { var t2 = l; l = r; r = t2; }
+							if( t > b ) { var t2 = t; t = b; b = t2; }
+							
+							this.g[i][j].setSize( l, t, r-l, b-t );							
+						}
+					}
+				},
+				render: function()
+				{
+					for( var i = 0; i < this.gw; i++)
+					{
+						for( var j = 0; j < this.gh; j++)
+						{
+							this.g[i][j].render( 'rgba( 0, 0, 255, alpha )', 'rgba( 0, 0, 255, alpha )' );
+						}
+					}
+				}
+			}
+			
+			function timeDisplay(c,x,y,w,h)
+			{
+				this.x = x;
+				this.y = y;
+				this.w = w;
+				this.h = h;
+				this.military = false;
+				this.displays = [];
+				for( var i = 0; i < 12; i++ ) {
+				 	var d = new dotDisplay( 'rgba( 255, 0, 0, alpha)', 5, 5 );
+				 	d.setSize( 200, 100, 100, 100 );
+				 	this.displays[i] = d;
+				}
+				this.updatePositions();
+				var self = this;
+				setInterval( function()
+				{
+					self.updateTime();
+					
+				}, 1000 );
+			}
+			
+			timeDisplay.prototype = {
+				updateTime: function()
+				{
+					var n = new Date();
+					var h = n.getHours();
+					var m = n.getMinutes();
+					var s = n.getSeconds();
+					this.displays[0].setMatrix( symbolData[ Math.floor( h / 10 ) ] );
+					this.displays[1].setMatrix( symbolData[ h % 10 ] );
+					this.displays[2].setMatrix( symbolData[ ':' ] );
+					this.displays[3].setMatrix( symbolData[ Math.floor( m / 10 ) ] );
+					this.displays[4].setMatrix( symbolData[ m % 10 ] );
+					this.displays[5].setMatrix( symbolData[ '.' ] );
+					this.displays[6].setMatrix( symbolData[ Math.floor( s / 10 ) ] );
+					this.displays[7].setMatrix( symbolData[ s % 10 ] );
+					if( h > 12 ) {
+						this.displays[9].setMatrix( symbolData[ 'P' ] );
+						this.displays[10].setMatrix( symbolData[ 'M' ] );
+					}
+					else {
+						this.displays[9].setMatrix( symbolData[ 'A' ] );
+						this.displays[10].setMatrix( symbolData[ 'M' ] );						
+					}
+				},
+				updatePositions: function()
+				{
+					var parts = [1,1,1,1,1];
+					if( true ) {
+						parts.push(1);
+						parts.push(1);
+						parts.push(1);
+					}
+					else {
+						parts.push(0);
+						parts.push(0);
+						parts.push(0);
+					}
+					if( false ) {
+						parts.push(0.3);
+						parts.push(0.6);
+						parts.push(0.6);
+						parts.push(0);
+					}
+					else {
+						parts.push(0);
+						parts.push(0);
+						parts.push(0);
+						parts.push(0);
+					}
+					var total = parts.reduce(function(a,b){ return a+b; });
+					var percs = parts.map(function(a){ return a/total; });
+					var part1 = percs[ 0 ];
+					
+					var p = 0;
+					for( var i = 0; i < percs.length; i++ ) {
+						var l = this.x + this.w * ( p ) + 2;
+						var r = this.x + this.w * ( p + percs[i] ) - 2;
+						var t = this.y + this.h - ( this.h * percs[i]/part1 );
+						var b = this.y + this.h;
+						this.displays[i].setSize( l, t, r-l, b-t);
+						p += percs[i];
+					}
+				},
+				render: function()
+				{
+					for( var i = 0; i < this.displays.length; i++ ) {
+						this.displays[i].render();
+					}
+				}
+			}
+			*/
+		</script>
+	</body>
+</html>

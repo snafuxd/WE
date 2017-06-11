@@ -1,0 +1,1360 @@
+{
+	"approved" : true,
+	"description" : "A circular version of the VU meters. Comes with 2 circles that can be configured seperately. Releasing this one into the wild to get some initial feedback, but still have a few features to implement. \n\n[h1][b]Beware of CPU usage. This one can be pretty heavy if you go all out[/b][/h1]\n\n[h1]Options[/h1]\n[list]\n[*] Show 1 or 2 circles\n[*] Background Image/Slideshow\n[*] Extensive coloring options for both \n[*] Change rotation & rotation speed \n[*] Change position\n[*] .... and more\n[/list]\n\n[h1]Gradient Tips[/h1]\n[list]\n[*]The gradient will ( read should ) continu its color rotation if values are perfect opposites ( aka 180deg difference in hue ). Thats why Red/Cyan/Red results in a full rainbow instead of going a mirrorer color gradient. There was a bug with this due to floating point maths, but think I fixed that. \n[*]When using more than 3 colors as well as the extra gradient, and If you are confronted with hard edge between one half and the other, try adjusting the value a little, either slightly different colors or if using black/white/grays try adding a little color into the value. It can make a big difference.\n[/list]\n\n[h1]Images used in examples[/h1]\n[list]\n[*]http://imgur.com/m7KgW9p\n[/list]\n\n[h1]Wishlist[/h1]\n... \n\n[h1]Bugs[/h1]\n[list]\n[*]Gradient doesn't always work as intended\n[*]Lower bar counts can result in lower values due to averaging, resulting in unused \"height\"\n[/list]\n\n[h1]Updates[/h1]\n[list]\n[*]Added responsiveness option\n[*]Added back in smoothing option\n[*]Added in cpu usage estimation. \n[*]Removed an unwanted calculation that should improve visuals.\n[*]Tweaked the audio processing to feel a bit more responsive in general ( related to the averaging problem )\n[*]Limited framerate to audio data updates as there are currently no visuals that would benefit from 60fps. Running at 60fps can still make a small difference tho. \n[*]Added in optional fps overlay to show fps & cpu estimates. \n[*]Fixed a mistake resulting it not showing stereo data but only the left channel.\n[/list]\n[list]\n[*]Realized rotation animation could benefit from 60fps, so fps gets unlocked when those are used now.\n[/list]\n[list]\n[*]Kinda fixed 2 gradient bugs .. I think I will leave it as it is as I think it allows most gradients to be made , even if it has its quirks.\n[*]Added opacity option for each color option .. \n[*]Tweaked initial settings a little\n[*]Full area is drawn for a short period of time while altering colors/opacity.\n[/list]\n[list]\n[*]Added an opacity option for the full circle ( called layer opacity )\n[*]Added blending & blur options per circle. Blending is mostly interesting when using a background image.\n[/list]",
+	"file" : "index.html",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"_" : 
+			{
+				"order" : 0,
+				"text" : "<h4>CPU Usage<br><small>This wallpaper can demand a lot of your CPU and I have not yet placed a cpu usage warning in this wallpaper. The general rule of thumb is the more it has to render the more it will use. Keep the circle's column & row values low unless you do not care.</h4>",
+				"type" : "text"
+			},
+			"animateWhenSilent" : 
+			{
+				"order" : 40,
+				"text" : "Animate when Silent",
+				"type" : "bool",
+				"value" : true
+			},
+			"background" : 
+			{
+				"order" : 10160,
+				"text" : "<h3>Background<small><small>&nbsp;&nbsp;Check to show options</small></small></h3>",
+				"type" : "bool"
+			},
+			"backgroundColor" : 
+			{
+				"condition" : "background.value == true",
+				"order" : 10161,
+				"text" : "Background Color",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"backgroundImage" : 
+			{
+				"condition" : "background.value == true",
+				"order" : 10162,
+				"text" : "Background Image",
+				"type" : "file",
+				"value" : ""
+			},
+			"backgroundOpacity" : 
+			{
+				"condition" : "background.value == true",
+				"max" : 100,
+				"min" : 0,
+				"order" : 10163,
+				"text" : "Background Image Opacity (%)",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle0_" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "1",
+						"value" : 1
+					},
+					{
+						"label" : "2",
+						"value" : 2
+					}
+				],
+				"order" : 99,
+				"text" : "Circles",
+				"type" : "combo",
+				"value" : 2
+			},
+			"circle1_" : 
+			{
+				"order" : 100,
+				"text" : "<h3>Circle 1<small><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Check to show options</small></small></h3>",
+				"type" : "bool"
+			},
+			"circle1_blending" : 
+			{
+				"condition" : "circle1_.value == true",
+				"options" : 
+				[
+					{
+						"label" : "normal",
+						"value" : "normal"
+					},
+					{
+						"label" : "multiply",
+						"value" : "multiply"
+					},
+					{
+						"label" : "screen",
+						"value" : "screen"
+					},
+					{
+						"label" : "overlay",
+						"value" : "overlay"
+					},
+					{
+						"label" : "darken",
+						"value" : "darken"
+					},
+					{
+						"label" : "lighten",
+						"value" : "lighten"
+					},
+					{
+						"label" : "color-dodge",
+						"value" : "color-dodge"
+					},
+					{
+						"label" : "color-burn",
+						"value" : "color-burn"
+					},
+					{
+						"label" : "hard-light",
+						"value" : "hard-light"
+					},
+					{
+						"label" : "soft-light",
+						"value" : "soft-light"
+					},
+					{
+						"label" : "difference",
+						"value" : "difference"
+					},
+					{
+						"label" : "exclusion",
+						"value" : "exclusion"
+					},
+					{
+						"label" : "hue",
+						"value" : "hue"
+					},
+					{
+						"label" : "saturation",
+						"value" : "saturation"
+					},
+					{
+						"label" : "color",
+						"value" : "color"
+					},
+					{
+						"label" : "luminosity",
+						"value" : "luminosity"
+					}
+				],
+				"order" : 162,
+				"text" : "Blend Mode",
+				"type" : "combo",
+				"value" : "normal"
+			},
+			"circle1_blur" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 10,
+				"min" : 0,
+				"order" : 161,
+				"text" : "Blur",
+				"type" : "slider",
+				"value" : 0
+			},
+			"circle1_c" : 
+			{
+				"condition" : "circle1_.value == true",
+				"options" : 
+				[
+					{
+						"label" : "4",
+						"value" : 4
+					},
+					{
+						"label" : "8",
+						"value" : 8
+					},
+					{
+						"label" : "16",
+						"value" : 16
+					},
+					{
+						"label" : "32",
+						"value" : 32
+					},
+					{
+						"label" : "64",
+						"value" : 64
+					},
+					{
+						"label" : "128",
+						"value" : 128
+					}
+				],
+				"order" : 103,
+				"text" : "Columns",
+				"type" : "combo",
+				"value" : 32
+			},
+			"circle1_col1" : 
+			{
+				"condition" : "circle1_.value == true && circle1_colCount.value >= 1",
+				"order" : 122,
+				"text" : "Color 1",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"circle1_col1a" : 
+			{
+				"condition" : "circle1_.value == true && circle1_colCount.value >= 1",
+				"max" : 100,
+				"min" : 0,
+				"order" : 123,
+				"text" : "Opacity 1",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle1_col2" : 
+			{
+				"condition" : "circle1_.value == true && circle1_colCount.value >= 2",
+				"order" : 124,
+				"text" : "Color 2",
+				"type" : "color",
+				"value" : "0 1 1"
+			},
+			"circle1_col2a" : 
+			{
+				"condition" : "circle1_.value == true && circle1_colCount.value >= 2",
+				"max" : 100,
+				"min" : 0,
+				"order" : 125,
+				"text" : "Opacity 2",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle1_col3" : 
+			{
+				"condition" : "circle1_.value == true && circle1_colCount.value >= 3",
+				"order" : 126,
+				"text" : "Color 3",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"circle1_col3a" : 
+			{
+				"condition" : "circle1_.value == true && circle1_colCount.value >= 3",
+				"max" : 100,
+				"min" : 0,
+				"order" : 127,
+				"text" : "Opacity 3",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle1_col4" : 
+			{
+				"condition" : "circle1_.value == true && circle1_colCount.value >= 4",
+				"order" : 128,
+				"text" : "Color 4",
+				"type" : "color",
+				"value" : "0 1 1"
+			},
+			"circle1_col4a" : 
+			{
+				"condition" : "circle1_.value == true && circle1_colCount.value >= 4",
+				"max" : 100,
+				"min" : 0,
+				"order" : 129,
+				"text" : "Opacity 4",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle1_col5" : 
+			{
+				"condition" : "circle1_.value == true && circle1_colCount.value >= 5",
+				"order" : 130,
+				"text" : "Color 5",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"circle1_col5a" : 
+			{
+				"condition" : "circle1_.value == true && circle1_colCount.value >= 5",
+				"max" : 100,
+				"min" : 0,
+				"order" : 131,
+				"text" : "Opacity 5",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle1_colCount" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 5,
+				"min" : 1,
+				"order" : 121,
+				"text" : "Use Colors",
+				"type" : "slider",
+				"value" : 3
+			},
+			"circle1_col_" : 
+			{
+				"condition" : "circle1_.value == true",
+				"order" : 120,
+				"text" : "<h4>Color Gradient</h4>",
+				"type" : "text"
+			},
+			"circle1_ecol1" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true && circle1_ecolCount.value >= 1",
+				"order" : 142,
+				"text" : "Color 1",
+				"type" : "color",
+				"value" : "0 1 1"
+			},
+			"circle1_ecol1a" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true && circle1_ecolCount.value >= 1",
+				"max" : 100,
+				"min" : 0,
+				"order" : 143,
+				"text" : "Opacity 1",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle1_ecol2" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true && circle1_ecolCount.value >= 2",
+				"order" : 144,
+				"text" : "Color 2",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"circle1_ecol2a" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true && circle1_ecolCount.value >= 2",
+				"max" : 100,
+				"min" : 0,
+				"order" : 145,
+				"text" : "Opacity 2",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle1_ecol3" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true && circle1_ecolCount.value >= 3",
+				"order" : 146,
+				"text" : "Color 3",
+				"type" : "color",
+				"value" : "0 1 1"
+			},
+			"circle1_ecol3a" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true && circle1_ecolCount.value >= 3",
+				"max" : 100,
+				"min" : 0,
+				"order" : 147,
+				"text" : "Opacity 3",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle1_ecol4" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true && circle1_ecolCount.value >= 4",
+				"order" : 148,
+				"text" : "Color 4",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"circle1_ecol4a" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true && circle1_ecolCount.value >= 4",
+				"max" : 100,
+				"min" : 0,
+				"order" : 149,
+				"text" : "Opacity 4",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle1_ecol5" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true && circle1_ecolCount.value >= 5",
+				"order" : 150,
+				"text" : "Color 5",
+				"type" : "color",
+				"value" : "0 1 1"
+			},
+			"circle1_ecol5a" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true && circle1_ecolCount.value >= 5",
+				"max" : 100,
+				"min" : 0,
+				"order" : 151,
+				"text" : "Opacity 5",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle1_ecolCount" : 
+			{
+				"condition" : "circle1_.value == true && circle1_ecolUse.value == true ",
+				"max" : 5,
+				"min" : 1,
+				"order" : 141,
+				"text" : "Use Colors",
+				"type" : "slider",
+				"value" : 3
+			},
+			"circle1_ecolUse" : 
+			{
+				"condition" : "circle1_.value == true",
+				"order" : 140,
+				"text" : "Use Extra Gradient",
+				"type" : "bool",
+				"value" : true
+			},
+			"circle1_er" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 2000,
+				"min" : 10,
+				"order" : 102,
+				"text" : "End Radius",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle1_m" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 10,
+				"min" : 1,
+				"order" : 105,
+				"text" : "Margin",
+				"type" : "slider",
+				"value" : 1
+			},
+			"circle1_opacity" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 100,
+				"min" : 0,
+				"order" : 163,
+				"text" : "Layer Opacity",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle1_px" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 1000,
+				"min" : -1000,
+				"order" : 108,
+				"text" : "Position X",
+				"type" : "slider",
+				"value" : 0
+			},
+			"circle1_py" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 1000,
+				"min" : -1000,
+				"order" : 109,
+				"text" : "Position Y",
+				"type" : "slider",
+				"value" : 0
+			},
+			"circle1_r" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 50,
+				"min" : 2,
+				"order" : 104,
+				"text" : "Rows",
+				"type" : "slider",
+				"value" : 20
+			},
+			"circle1_rb" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 180,
+				"min" : -180,
+				"order" : 107,
+				"text" : "Rotation Offset",
+				"type" : "slider",
+				"value" : 0
+			},
+			"circle1_rs" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 100,
+				"min" : -100,
+				"order" : 106,
+				"text" : "Rotation Speed",
+				"type" : "slider",
+				"value" : 0
+			},
+			"circle1_sr" : 
+			{
+				"condition" : "circle1_.value == true",
+				"max" : 2000,
+				"min" : 10,
+				"order" : 101,
+				"text" : "Start Radius",
+				"type" : "slider",
+				"value" : 200
+			},
+			"circle2_" : 
+			{
+				"condition" : "circle0_.value == 2",
+				"order" : 200,
+				"text" : "<h3>Circle 2<small><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Check to show options</small></small></h3>",
+				"type" : "bool"
+			},
+			"circle2_blending" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"options" : 
+				[
+					{
+						"label" : "normal",
+						"value" : "normal"
+					},
+					{
+						"label" : "multiply",
+						"value" : "multiply"
+					},
+					{
+						"label" : "screen",
+						"value" : "screen"
+					},
+					{
+						"label" : "overlay",
+						"value" : "overlay"
+					},
+					{
+						"label" : "darken",
+						"value" : "darken"
+					},
+					{
+						"label" : "lighten",
+						"value" : "lighten"
+					},
+					{
+						"label" : "color-dodge",
+						"value" : "color-dodge"
+					},
+					{
+						"label" : "color-burn",
+						"value" : "color-burn"
+					},
+					{
+						"label" : "hard-light",
+						"value" : "hard-light"
+					},
+					{
+						"label" : "soft-light",
+						"value" : "soft-light"
+					},
+					{
+						"label" : "difference",
+						"value" : "difference"
+					},
+					{
+						"label" : "exclusion",
+						"value" : "exclusion"
+					},
+					{
+						"label" : "hue",
+						"value" : "hue"
+					},
+					{
+						"label" : "saturation",
+						"value" : "saturation"
+					},
+					{
+						"label" : "color",
+						"value" : "color"
+					},
+					{
+						"label" : "luminosity",
+						"value" : "luminosity"
+					}
+				],
+				"order" : 262,
+				"text" : "Blend Mode",
+				"type" : "combo",
+				"value" : "normal"
+			},
+			"circle2_blur" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 10,
+				"min" : 0,
+				"order" : 261,
+				"text" : "Blur",
+				"type" : "slider",
+				"value" : 0
+			},
+			"circle2_c" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"options" : 
+				[
+					{
+						"label" : "4",
+						"value" : 4
+					},
+					{
+						"label" : "8",
+						"value" : 8
+					},
+					{
+						"label" : "16",
+						"value" : 16
+					},
+					{
+						"label" : "32",
+						"value" : 32
+					},
+					{
+						"label" : "64",
+						"value" : 64
+					},
+					{
+						"label" : "128",
+						"value" : 128
+					}
+				],
+				"order" : 203,
+				"text" : "Columns",
+				"type" : "combo",
+				"value" : 16
+			},
+			"circle2_col1" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_colCount.value >= 1",
+				"order" : 222,
+				"text" : "Color 1",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"circle2_col1a" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_colCount.value >= 1",
+				"max" : 100,
+				"min" : 0,
+				"order" : 223,
+				"text" : "Opacity 1",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle2_col2" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_colCount.value >= 2",
+				"order" : 224,
+				"text" : "Color 2",
+				"type" : "color",
+				"value" : "0 1 1"
+			},
+			"circle2_col2a" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_colCount.value >= 2",
+				"max" : 100,
+				"min" : 0,
+				"order" : 225,
+				"text" : "Opacity 2",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle2_col3" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_colCount.value >= 3",
+				"order" : 226,
+				"text" : "Color 3",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"circle2_col3a" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_colCount.value >= 3",
+				"max" : 100,
+				"min" : 0,
+				"order" : 227,
+				"text" : "Opacity 3",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle2_col4" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_colCount.value >= 4",
+				"order" : 228,
+				"text" : "Color 4",
+				"type" : "color",
+				"value" : "0 1 1"
+			},
+			"circle2_col4a" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_colCount.value >= 4",
+				"max" : 100,
+				"min" : 0,
+				"order" : 229,
+				"text" : "Opacity 4",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle2_col5" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_colCount.value >= 5",
+				"order" : 230,
+				"text" : "Color 5",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"circle2_col5a" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_colCount.value >= 5",
+				"max" : 100,
+				"min" : 0,
+				"order" : 231,
+				"text" : "Opacity 5",
+				"type" : "slider",
+				"value" : 10
+			},
+			"circle2_colCount" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 5,
+				"min" : 1,
+				"order" : 221,
+				"text" : "Use Colors",
+				"type" : "slider",
+				"value" : 3
+			},
+			"circle2_col_" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"order" : 220,
+				"text" : "<h4>Color Gradient</h4>",
+				"type" : "text"
+			},
+			"circle2_ecol1" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true && circle2_ecolCount.value >= 1",
+				"order" : 242,
+				"text" : "Color 1",
+				"type" : "color",
+				"value" : "0 1 1"
+			},
+			"circle2_ecol1a" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true && circle2_ecolCount.value >= 1",
+				"max" : 100,
+				"min" : 0,
+				"order" : 243,
+				"text" : "Opacity 1",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle2_ecol2" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true && circle2_ecolCount.value >= 2",
+				"order" : 244,
+				"text" : "Color 2",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"circle2_ecol2a" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true && circle2_ecolCount.value >= 2",
+				"max" : 100,
+				"min" : 0,
+				"order" : 245,
+				"text" : "Opacity 2",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle2_ecol3" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true && circle2_ecolCount.value >= 3",
+				"order" : 246,
+				"text" : "Color 3",
+				"type" : "color",
+				"value" : "0 1 1"
+			},
+			"circle2_ecol3a" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true && circle2_ecolCount.value >= 3",
+				"max" : 100,
+				"min" : 0,
+				"order" : 247,
+				"text" : "Opacity 3",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle2_ecol4" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true && circle2_ecolCount.value >= 4",
+				"order" : 248,
+				"text" : "Color 4",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"circle2_ecol4a" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true && circle2_ecolCount.value >= 4",
+				"max" : 100,
+				"min" : 0,
+				"order" : 249,
+				"text" : "Opacity 4",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle2_ecol5" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true && circle2_ecolCount.value >= 5",
+				"order" : 250,
+				"text" : "Color 5",
+				"type" : "color",
+				"value" : "0 1 1"
+			},
+			"circle2_ecol5a" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true && circle2_ecolCount.value >= 5",
+				"max" : 100,
+				"min" : 0,
+				"order" : 251,
+				"text" : "Opacity 5",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle2_ecolCount" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true && circle2_ecolUse.value == true ",
+				"max" : 5,
+				"min" : 1,
+				"order" : 241,
+				"text" : "Use Colors",
+				"type" : "slider",
+				"value" : 3
+			},
+			"circle2_ecolUse" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"order" : 240,
+				"text" : "Use Extra Gradient",
+				"type" : "bool",
+				"value" : true
+			},
+			"circle2_er" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 2000,
+				"min" : 10,
+				"order" : 202,
+				"text" : "End Radius",
+				"type" : "slider",
+				"value" : 400
+			},
+			"circle2_m" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 10,
+				"min" : 1,
+				"order" : 205,
+				"text" : "Margin",
+				"type" : "slider",
+				"value" : 4
+			},
+			"circle2_opacity" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 100,
+				"min" : 0,
+				"order" : 263,
+				"text" : "Layer Opacity",
+				"type" : "slider",
+				"value" : 100
+			},
+			"circle2_px" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 1000,
+				"min" : -1000,
+				"order" : 208,
+				"text" : "Position X",
+				"type" : "slider",
+				"value" : 0
+			},
+			"circle2_py" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 1000,
+				"min" : -1000,
+				"order" : 209,
+				"text" : "Position Y",
+				"type" : "slider",
+				"value" : 0
+			},
+			"circle2_r" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 50,
+				"min" : 2,
+				"order" : 204,
+				"text" : "Rows",
+				"type" : "slider",
+				"value" : 15
+			},
+			"circle2_rb" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 180,
+				"min" : -180,
+				"order" : 207,
+				"text" : "Rotation Offset",
+				"type" : "slider",
+				"value" : 0
+			},
+			"circle2_rs" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 100,
+				"min" : -100,
+				"order" : 206,
+				"text" : "Rotation Speed",
+				"type" : "slider",
+				"value" : 0
+			},
+			"circle2_sr" : 
+			{
+				"condition" : "circle0_.value == 2 && circle2_.value == true",
+				"max" : 2000,
+				"min" : 10,
+				"order" : 201,
+				"text" : "Start Radius",
+				"type" : "slider",
+				"value" : 200
+			},
+			"cpu" : 
+			{
+				"order" : 15000,
+				"text" : "<h3>CPU Warning Settings</h3>",
+				"type" : "bool"
+			},
+			"cpuCores" : 
+			{
+				"condition" : "cpu.value == true",
+				"max" : 16,
+				"min" : 1,
+				"order" : 15002,
+				"text" : "CPU Cores",
+				"type" : "slider",
+				"value" : 4
+			},
+			"cpuPercWarning" : 
+			{
+				"condition" : "cpu.value == true",
+				"max" : 100,
+				"min" : 1,
+				"order" : 15003,
+				"text" : "CPU Warning At (%)",
+				"type" : "slider",
+				"value" : 10
+			},
+			"cpu_" : 
+			{
+				"condition" : "cpu.value == true",
+				"order" : 15001,
+				"text" : "<small>Set the amount of cores your CPU has and I can adjust the processing time to a cpu usage estimation. Set the warning to 100% if you never want to see a warning.</small><br><br><h5><small>Values reported are only estimations as I can not measure the actual usage, so they can be lower or higher than the actual usage.</small></h5>",
+				"type" : "text"
+			},
+			"eq" : 
+			{
+				"order" : 10399,
+				"text" : "<h3>Equalizer<small><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Check to show options</small></small></h3>",
+				"type" : "bool"
+			},
+			"eq1" : 
+			{
+				"condition" : "eq.value == true",
+				"max" : 160,
+				"min" : 0,
+				"order" : 10401,
+				"text" : "Band 1 Freq.",
+				"type" : "slider",
+				"value" : 10
+			},
+			"eq1Strength" : 
+			{
+				"condition" : "eq.value == true",
+				"max" : 100,
+				"min" : 0,
+				"order" : 10402,
+				"text" : "Band 1 Strength",
+				"type" : "slider",
+				"value" : 100
+			},
+			"eq2" : 
+			{
+				"condition" : "eq.value == true",
+				"max" : 160,
+				"min" : 0,
+				"order" : 10404,
+				"text" : "Band 2 Freq.",
+				"type" : "slider",
+				"value" : 40
+			},
+			"eq2Strength" : 
+			{
+				"condition" : "eq.value == true",
+				"max" : 100,
+				"min" : 0,
+				"order" : 10405,
+				"text" : "Band 2 Strength",
+				"type" : "slider",
+				"value" : 100
+			},
+			"eq3" : 
+			{
+				"condition" : "eq.value == true",
+				"max" : 160,
+				"min" : 0,
+				"order" : 10407,
+				"text" : "Band 3 Freq.",
+				"type" : "slider",
+				"value" : 140
+			},
+			"eq3Strength" : 
+			{
+				"condition" : "eq.value == true",
+				"max" : 100,
+				"min" : 0,
+				"order" : 10408,
+				"text" : "Band 3 Strength",
+				"type" : "slider",
+				"value" : 100
+			},
+			"eqStrength" : 
+			{
+				"condition" : "eq.value == true",
+				"max" : 100,
+				"min" : 0,
+				"order" : 10416,
+				"text" : "Global Strength",
+				"type" : "slider",
+				"value" : 30
+			},
+			"eqWidth" : 
+			{
+				"condition" : "eq.value == true",
+				"max" : 30,
+				"min" : 1,
+				"order" : 10415,
+				"text" : "Width",
+				"type" : "slider",
+				"value" : 27
+			},
+			"eq_" : 
+			{
+				"condition" : "eq.value == true",
+				"order" : 10401,
+				"text" : "<small>Equaliser exists of 3 frequency bands to tweak the responds for certain frequencies to either focus on certain frequencies or create a more even distribution. Changing values will show the current EQ graph and resulting values in green.<br><br>Freq. values are frequency multiplied 100. So a value of 15 will result in 1500hz.</small>",
+				"type" : "text"
+			},
+			"frame2MotionBlurAmount" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 61,
+				"text" : "Responsiveness (%)<br><h5><small>Raising this will raise CPU usage</small></h5>",
+				"type" : "slider",
+				"value" : "40"
+			},
+			"frame2Pow" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "6",
+						"value" : 8
+					},
+					{
+						"label" : "5",
+						"value" : 6
+					},
+					{
+						"label" : "4",
+						"value" : 4
+					},
+					{
+						"label" : "3",
+						"value" : 3
+					},
+					{
+						"label" : "2",
+						"value" : 2
+					},
+					{
+						"label" : "1",
+						"value" : 1.5
+					},
+					{
+						"label" : "No Change",
+						"value" : 1
+					},
+					{
+						"label" : "-1",
+						"value" : 0.66000000000000003
+					},
+					{
+						"label" : "-2",
+						"value" : 0.5
+					},
+					{
+						"label" : "-3",
+						"value" : 0.25
+					}
+				],
+				"order" : 61,
+				"text" : "Value Scale",
+				"type" : "combo",
+				"value" : 1.5
+			},
+			"frame2SmoothAmount" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"order" : 62,
+				"text" : "Smooth Amount (%)<br><h5><small>Has most impact when using many columns</small></h5>",
+				"type" : "slider",
+				"value" : 25
+			},
+			"otherShowFps" : 
+			{
+				"order" : 20001,
+				"text" : "Show FPS stats",
+				"type" : "bool",
+				"value" : false
+			},
+			"other_" : 
+			{
+				"order" : 20000,
+				"text" : "<h3>Other</h3>",
+				"type" : "text"
+			},
+			"schemecolor" : 
+			{
+				"order" : 200000,
+				"text" : "Scheme color",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"slideshow" : 
+			{
+				"condition" : "background.value == true",
+				"order" : 10174,
+				"text" : "<h4>Background Slideshow</h4>",
+				"type" : "text"
+			},
+			"slideshowFolder" : 
+			{
+				"condition" : "background.value == true",
+				"mode" : "fetchall",
+				"order" : 10175,
+				"text" : "Image Folder",
+				"type" : "directory"
+			},
+			"slideshowInterval" : 
+			{
+				"condition" : "background.value == true",
+				"max" : 120,
+				"min" : 1,
+				"order" : 10176,
+				"text" : "Image Interval",
+				"type" : "slider",
+				"value" : 5
+			},
+			"slideshowIntervalMultiplier" : 
+			{
+				"condition" : "background.value == true",
+				"options" : 
+				[
+					{
+						"label" : "seconds",
+						"value" : 1
+					},
+					{
+						"label" : "minutes",
+						"value" : 60
+					},
+					{
+						"label" : "hour",
+						"value" : 3600
+					}
+				],
+				"order" : 10177,
+				"text" : "Image Interval Units",
+				"type" : "combo",
+				"value" : 1
+			},
+			"slideshowShowTransitions" : 
+			{
+				"condition" : "slideshowUseTransitions.value",
+				"order" : 10180,
+				"text" : "Choose Transitions",
+				"type" : "bool",
+				"value" : false
+			},
+			"slideshowTransFade" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.01,
+				"text" : "Fade",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransMoveBottom" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.110000000001,
+				"text" : "Move From Bottom",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransMoveLeft" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.08,
+				"text" : "Move From Left",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransMoveRight" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.09,
+				"text" : "Move From Right",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransMoveTop" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.1,
+				"text" : "Move From Top",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransShuffleBottom" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.15,
+				"text" : "Shuffle From Bottom",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransShuffleLeft" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.120000000001,
+				"text" : "Shuffle From Left",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransShuffleRight" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.129999999999,
+				"text" : "Shuffle From Right",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransShuffleTop" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.139999999999,
+				"text" : "Shuffle From Top",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomHorzIn" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.040000000001,
+				"text" : "Zoom Horz In",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomHorzOut" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.049999999999,
+				"text" : "Zoom Horz Out",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomIn" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.02,
+				"text" : "Zoom In",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomOut" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.030000000001,
+				"text" : "Zoom Out",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomVertIn" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.059999999999,
+				"text" : "Zoom Vert In",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTransZoomVertOut" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.07,
+				"text" : "Zoom Vert Out",
+				"type" : "bool",
+				"value" : true
+			},
+			"slideshowTrans_" : 
+			{
+				"condition" : "slideshowUseTransitions.value && slideshowShowTransitions.value",
+				"order" : 10180.001,
+				"text" : "<h4><small>If you toggle an animation on, it will be used for the next transition.</small></h4>",
+				"type" : "text"
+			},
+			"slideshowTransitionDuration" : 
+			{
+				"condition" : "background.value == true",
+				"max" : 10,
+				"min" : 0,
+				"order" : 10178,
+				"text" : "Transition Duration",
+				"type" : "slider",
+				"value" : 2
+			},
+			"slideshowUseTransitions" : 
+			{
+				"condition" : "background.value == true",
+				"order" : 10179,
+				"text" : "Use Transitions<br><small>Will increase cpu/gpu usage a little for the duration of each transition.</small>",
+				"type" : "bool",
+				"value" : false
+			}
+		},
+		"supportsaudioprocessing" : true
+	},
+	"monetization" : false,
+	"preview" : "preview.jpg",
+	"tags" : [ "Abstract" ],
+	"title" : "VU Meter - Circles",
+	"type" : "web",
+	"visibility" : "public",
+	"workshopid" : 882643282
+}
