@@ -21,3 +21,10 @@ Requests kan je op volgende manier doorsturen en worden zo snel mogelijk aangepa
 1. Zoek wallpaper in workshop - https://steamcommunity.com/app/431960/workshop/
 2. Join Discord - https://discord.gg/zVbJsRn
 3. Post request in juiste text-channel
+
+
+
+Wordt een bepaalde wallpaper niet gevonden ?
+1. klik "Open from File"
+2. zoek File in volgende folder (C:\Program Files (x86)\Steam\steamapps\workshop\content)
+3. (Wordt gewerkt aan een oplossing)
