@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<title>MKVDB 2016 Audio Eclipse - Wallpaper Engine version</title>
+<style type="text/css">body {margin:0;overflow:hidden;}</style>
+</head>
+<body scroll="no" style="background-color:black">
+  <div id="container">
+  </div>
+  <script id="vertexShader" type="x-shader/x-vertex">
+    varying vec2 a;void main(){a=vec2(uv.x,1.-uv.y);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1);}
+  </script>
+  <script id="fragmentShader" type="x-shader/x-fragment">
+
+  //////////////////////////////////////////////////////
+  // MKVDB 2016 Audio Eclipse - Wallpaper Engine v1.5 //
+  //////////////////////////////////////////////////////
+
+  uniform vec2 rz;uniform float time,rd,gm,cv,md,xp,yp,tr,tg,tb,asp[128];vec3 i(vec3 b){vec4 a=vec4(1.,.666667,.333333,3.);vec3 c=abs(fract(b.xxx+a.xyz)*6.-a.www);return b.z*mix(a.xxx,clamp(c-a.xxx,0.,1.),b.y);}void main(){vec2 e=(gl_FragCoord.xy-.5*rz.xy)/min(rz.x,rz.y);vec3 a=vec3(0.,0.,0.);float f=1.-xp/50.,g=(1.-yp/50.)/2.;for(int b=0;b<64;b++){float d=0.;d=cv==1.?asp[b]:cv==2.?log2(1.+asp[b]):cv==3.?pow(asp[b],1.):cv==4.?1.-pow(1.-asp[b],2.):cv==5.?(pow(asp[b],1.)+pow(asp[64+b],1.))/2.:d;float j=d/4.,k=j*.035,l=rd*cos(6.28*float(b)/64.)+f,m=rd*sin(6.28*float(b)/64.)+g;vec2 n=vec2(l,m);vec3 o=i(vec3((float(b)+time*50.)/64.,1.,1.))+vec3(tr,tg,tb);a+=k/length(e-n)*o;}float p=distance(e,vec2(f,g)),h=smoothstep(rd+.016,rd+.02,p);a=a*a*a*h,a=pow(a,vec3(100./gm));vec2 c=gl_FragCoord.xy/rz.xy;a*=pow(16.*c.x*c.y*(1.-c.x)*(1.-c.y),.5);if(md==1.)gl_FragColor=vec4(a,1.);else if(md==2.)gl_FragColor+=vec4(a,a+1.-h);else if(md==3.)gl_FragColor+=vec4(a,a);}
+ 
+  </script>
+  <script src="Three.js"></script>
+  <script src="RequestAnimationFrame.js"></script>
+  <script src="stats.min.js"></script>
+  <script src="shader.js"></script>
+</body>
+</html>

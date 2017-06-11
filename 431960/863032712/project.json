@@ -1,0 +1,23 @@
+{
+	"description" : "Edited CS:GO video: https://www.youtube.com/watch?v=Op6kgayifzU\r\nThe original creators: https://www.youtube.com/channel/UCkzIPO0-cy-h2Kj8gJwTbYg\r\nSong: Mind Tree - Paxton\r\nEdited for Wallpaper Engine by me\r\n--------------------------------------------\r\nRec",
+	"file" : "csgo_UE4_1.mp4",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0.5803921568627451 0.5803921568627451 0.5803921568627451"
+			}
+		}
+	},
+	"preview" : "preview.jpg",
+	"tags" : [ "Game" ],
+	"title" : "CSGO | Unreal Engine 4 | 1080p | 30fps",
+	"type" : "Video",
+	"visibility" : "public",
+	"workshopid" : 863032712
+}

@@ -1,0 +1,156 @@
+{
+	"description" : "Reacts to audio, adjusts to any resolution or aspect ratio, minimal GPU load \n\nUPDATED: Audio trigger fast/smooth (prevents heavy flashing)\n\nv1.4: Add your own image background now supported! \nFixed: more than 2 monitors support \n\nThank you for the suggestions, more options coming soon \n\nMusic in preview: Phaeleh - Afterglow \n\nIMPORTANT: IF THE SCREEN STAYS BLACK: Fix for Razer headsets and MSI Nahimic here: http://steamcommunity.com/app/431960/discussions/2/348292787747453462/ \n\n-- Uses three.js and webGL2.0 -- rate this if you want more --",
+	"file" : "index.html",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"cmasmooth" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "Fast",
+						"value" : 1
+					},
+					{
+						"label" : "Smooth",
+						"value" : 2
+					}
+				],
+				"text" : "Audio Trigger",
+				"type" : "combo",
+				"value" : 2
+			},
+			"cmbstint" : 
+			{
+				"max" : 300,
+				"min" : 1,
+				"text" : "Audio input boost %",
+				"type" : "slider",
+				"value" : 100
+			},
+			"cmcombo" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "Linear",
+						"value" : 1
+					},
+					{
+						"label" : "Log",
+						"value" : 2
+					},
+					{
+						"label" : "Exp",
+						"value" : 3
+					},
+					{
+						"label" : "ExpB",
+						"value" : 4
+					},
+					{
+						"label" : "Phase",
+						"value" : 5
+					}
+				],
+				"text" : "Response curve",
+				"type" : "combo",
+				"value" : 3
+			},
+			"cmgmmint" : 
+			{
+				"max" : 200,
+				"min" : 25,
+				"text" : "Gamma",
+				"type" : "slider",
+				"value" : 100
+			},
+			"cmmode" : 
+			{
+				"options" : 
+				[
+					{
+						"label" : "No Image",
+						"value" : 1
+					},
+					{
+						"label" : "Standard",
+						"value" : 2
+					},
+					{
+						"label" : "Lighten",
+						"value" : 3
+					}
+				],
+				"text" : "Image Blend",
+				"type" : "combo",
+				"value" : 2
+			},
+			"cmrdsint" : 
+			{
+				"max" : 130,
+				"min" : 15,
+				"text" : "Sphere radius",
+				"type" : "slider",
+				"value" : 25
+			},
+			"cmsldint" : 
+			{
+				"max" : 300,
+				"min" : 0,
+				"text" : "Color rotation speed",
+				"type" : "slider",
+				"value" : 50
+			},
+			"cmusercolor" : 
+			{
+				"text" : "Color tint",
+				"type" : "color",
+				"value" : "0.35 0.0 0.25"
+			},
+			"cmxint" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"text" : "x position",
+				"type" : "slider",
+				"value" : 50
+			},
+			"cmyint" : 
+			{
+				"max" : 100,
+				"min" : 0,
+				"text" : "y position",
+				"type" : "slider",
+				"value" : 50
+			},
+			"customimage" : 
+			{
+				"text" : "Background image",
+				"type" : "file"
+			},
+			"fpsbool" : 
+			{
+				"text" : "FPS counter",
+				"type" : "bool",
+				"value" : false
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0 0 0"
+			}
+		},
+		"supportsaudioprocessing" : true
+	},
+	"preview" : "preview.jpg",
+	"tags" : [ "Music", "Abstract", "Multi-monitor optimized" ],
+	"title" : "Audio Eclipse",
+	"type" : "web",
+	"visibility" : "public",
+	"workshopid" : 812677029
+}

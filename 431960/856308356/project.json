@@ -1,0 +1,22 @@
+{
+	"description" : "I don't own this video. I just thought it was cool if it is a wallpaper",
+	"file" : "CS-GO - Fragstorm 4 - YouTube.MP4",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0 0 0"
+			}
+		}
+	},
+	"preview" : "preview.jpg",
+	"tags" : [ "Game" ],
+	"title" : "Fragstorm 4",
+	"type" : "video",
+	"visibility" : "public"
+}
