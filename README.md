@@ -14,4 +14,4 @@ Download link naar WE-client : https://www.dropbox.com/s/y186iq03alogm4v/wallpap
 
 Download link videos : https://www.dropbox.com/sh/gebpfvqah674gqr/AABnJ-GsciTAM2FvOdqYxbJsa?dl=0
 1. Copy folder in (C:\Program Files (x86)\Steam\steamapps\workshop\content)
-2. Controleer of alle bestanden compleet gedownload en copy'ed zijn. ( jpeg , json & mp4 bestand per file)
+2. Controleer of alle bestanden compleet gedownload en copy'ed zijn. ( jpeg , json & mp4 bestand per file) Soms wordt mp4 bestand niet correct gedownload.
